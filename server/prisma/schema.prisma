@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  username  String  @id @db.VarChar(100)
+  email     String  @db.VarChar(100)
+  password  String  @db.VarChar(100)
+  full_name String  @db.VarChar(100)
+  balance   Decimal @db.Decimal(14, 2)
+  token     String? @db.VarChar(100)
+
+  contacts     Contact[]
+  transactions Transaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Contact {
+  id            Int     @id @default(autoincrement())
+  name          String  @db.VarChar(100)
+  profile_image String?
+
+  username String @db.VarChar(100)
+  user     User   @relation(fields: [username], references: [username])
+
+  transactions Transaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contacts")
+}
+
+model Transaction {
+  id          Int               @id @default(autoincrement())
+  type        TransactionType
+  amount      Decimal           @db.Decimal(14, 2)
+  description String?           @db.VarChar(255)
+  status      TransactionStatus @default(ACTIVE)
+  date        DateTime          @default(now())
+  due_date    DateTime?
+
+  username String @db.VarChar(100)
+  user     User   @relation(fields: [username], references: [username])
+
+  contact_id Int
+  contact    Contact @relation(fields: [contact_id], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transactions")
+}
+
+enum TransactionType {
+  DEBT
+  RECEIVABLE
+}
+
+enum TransactionStatus {
+  ACTIVE
+  PAID
+}
