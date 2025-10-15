@@ -12,7 +12,7 @@ interface ZodSchemaClass {
 
 @Injectable()
 export class ZodValidationPipe implements PipeTransform {
-  transform(value: unknown, metadata: ArgumentMetadata) {
+  transform<T = any>(value: unknown, metadata: ArgumentMetadata) {
     if (this.isZodSchemaClass(metadata.metatype)) {
       const schema = metadata.metatype.schema;
       const result = schema.safeParse(value);
@@ -34,7 +34,11 @@ export class ZodValidationPipe implements PipeTransform {
 
         throw new BadRequestException('Invalid request payload');
       }
+
+      return result.data as T;
     }
+
+    return value as T;
   }
 
   private isZodSchemaClass(metatype?: unknown): metatype is ZodSchemaClass {

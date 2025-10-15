@@ -10,7 +10,7 @@ CREATE TABLE "users" (
     "email" VARCHAR(100) NOT NULL,
     "password" VARCHAR(100) NOT NULL,
     "full_name" VARCHAR(100) NOT NULL,
-    "balance" DECIMAL(14,2) NOT NULL,
+    "balance" DOUBLE PRECISION DEFAULT 0,
     "token" VARCHAR(100),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE "contacts" (
 CREATE TABLE "transactions" (
     "id" SERIAL NOT NULL,
     "type" "TransactionType" NOT NULL,
-    "amount" DECIMAL(14,2) NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
     "description" VARCHAR(255),
     "status" "TransactionStatus" NOT NULL DEFAULT 'ACTIVE',
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -46,6 +46,12 @@ CREATE TABLE "transactions" (
 
     CONSTRAINT "transactions_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- AddForeignKey
 ALTER TABLE "contacts" ADD CONSTRAINT "contacts_username_fkey" FOREIGN KEY ("username") REFERENCES "users"("username") ON DELETE RESTRICT ON UPDATE CASCADE;
