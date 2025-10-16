@@ -3,6 +3,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from 'src/constants/common';
+import { JwtStrategy } from './auth/strategies/jwt.strategy';
 
 @Global()
 @Module({
@@ -14,7 +15,7 @@ import { jwtConstants } from 'src/constants/common';
       signOptions: { expiresIn: '1h' },
     }),
   ],
-  providers: [PrismaService],
+  providers: [PrismaService, JwtStrategy],
   exports: [PrismaService],
 })
 export class CommonModule {}
