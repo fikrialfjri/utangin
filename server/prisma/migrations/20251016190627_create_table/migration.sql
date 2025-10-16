@@ -11,7 +11,6 @@ CREATE TABLE "users" (
     "password" VARCHAR(100) NOT NULL,
     "full_name" VARCHAR(100) NOT NULL,
     "balance" DOUBLE PRECISION DEFAULT 0,
-    "token" VARCHAR(100),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -22,7 +21,7 @@ CREATE TABLE "users" (
 CREATE TABLE "contacts" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(100) NOT NULL,
-    "profile_image" TEXT,
+    "avatar" TEXT,
     "username" VARCHAR(100) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
