@@ -1,7 +1,11 @@
-export class AuthResponse {
+export class UserResponse {
   username: string;
   full_name: string;
   email: string;
   balance: number;
-  token?: string;
+}
+
+export class AuthResponse {
+  access_token: string;
+  user: UserResponse;
 }

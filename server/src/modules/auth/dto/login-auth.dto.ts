@@ -21,23 +21,7 @@ const loginAuthSchema = z.object({
   password: z
     .string()
     .min(8, 'Password harus memiliki minimal 8 karakter')
-    .max(100, 'Password tidak boleh lebih dari 100 karakter')
-    .refine(
-      (password) => /[A-Z]/.test(password),
-      'Password harus mengandung setidaknya satu huruf besar (A-Z)',
-    )
-    .refine(
-      (password) => /[a-z]/.test(password),
-      'Password harus mengandung setidaknya satu huruf kecil (a-z)',
-    )
-    .refine(
-      (password) => /[0-9]/.test(password),
-      'Password harus mengandung setidaknya satu angka (0-9)',
-    )
-    .refine(
-      (password) => /[!@#$%^&*]/.test(password),
-      'Password harus mengandung setidaknya satu karakter spesial (!@#$%^&*)',
-    ),
+    .max(100, 'Password tidak boleh lebih dari 100 karakter'),
 });
 
 export class LoginAuthDto {
