@@ -10,6 +10,7 @@ import {
   Get,
   ParseIntPipe,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
@@ -71,7 +72,7 @@ export class ContactController {
     @Req() req: Request & { user: { username: string } },
   ): Promise<BaseResponse<ContactResponse[]>> {
     return {
-      message: 'Data contact berhasil dimuat',
+      message: 'Data list contact berhasil dimuat',
       data: await this.contactService.findAll(req.user.username),
     };
   }
@@ -84,6 +85,17 @@ export class ContactController {
     return {
       message: 'Data detail contact berhasil dimuat',
       data: await this.contactService.findOne(req.user.username, id),
+    };
+  }
+
+  @Delete(':id')
+  async remove(
+    @Req() req: Request & { user: { username: string } },
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<BaseResponse<ContactResponse>> {
+    return {
+      message: 'Data contact berhasil dihapus',
+      data: await this.contactService.remove(req.user.username, id),
     };
   }
 }
