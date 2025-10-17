@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
@@ -20,6 +21,7 @@ import { JwtAuthGuard } from 'src/common/auth/guards/logged-in.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'node:path';
+import { UpdateContactDto } from './dto/update-contact.dto';
 
 @Controller('api/contact')
 @UseGuards(JwtAuthGuard)
@@ -85,6 +87,49 @@ export class ContactController {
     return {
       message: 'Data detail contact berhasil dimuat',
       data: await this.contactService.findOne(req.user.username, id),
+    };
+  }
+
+  @Put(':id')
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: diskStorage({
+        destination: './public/uploads/photos',
+        filename: (req, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, uniqueSuffix + extname(file.originalname));
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        if (
+          !new RegExp(/\.(jpg|jpeg|png|gif|avif|webp)$/).exec(file.originalname)
+        ) {
+          return cb(
+            new UnsupportedMediaTypeException(
+              'Format avatar tidak didukung. Hanya file gambar (JPG, JPEG, PNG, GIF, AVIF, atau WEBP) yang diperbolehkan.',
+            ),
+            false,
+          );
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  async update(
+    @Req() req: Request & { user: { username: string } },
+    @Param('id', ParseIntPipe) id: number,
+    @Body() reqBody: UpdateContactDto,
+    @UploadedFile() avatar: Express.Multer.File | undefined,
+  ): Promise<BaseResponse<ContactResponse>> {
+    return {
+      message: 'Data contact berhasil diperbarui',
+      data: await this.contactService.update(
+        req.user.username,
+        id,
+        reqBody,
+        avatar?.filename,
+      ),
     };
   }
 

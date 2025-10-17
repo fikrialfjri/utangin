@@ -3,6 +3,7 @@ import { CreateContactDto } from './dto/create-contact.dto';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { ContactResponse } from './responses/contact.response';
 import { Contact } from '@prisma/client';
+import { UpdateContactDto } from './dto/update-contact.dto';
 
 @Injectable()
 export class ContactService {
@@ -58,9 +59,25 @@ export class ContactService {
     return this.toContactResponse(contact);
   }
 
-  // update(id: number, reqBody: UpdateContactDto) {
-  //   return `This action updates a #${id} contact`;
-  // }
+  async update(
+    username: string,
+    id: number,
+    reqBody: UpdateContactDto,
+    avatarFilename?: string | null,
+  ): Promise<ContactResponse> {
+    await this.checkContactMustExists(username, id);
+
+    const updatedContact = await this.prismaService.contact.update({
+      where: { username, id },
+      data: {
+        name: reqBody.name,
+        username,
+        avatar: avatarFilename && `/uploads/photos/${avatarFilename}`,
+      },
+    });
+
+    return this.toContactResponse(updatedContact);
+  }
 
   async remove(username: string, id: number): Promise<ContactResponse> {
     await this.checkContactMustExists(username, id);
