@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { ContactResponse } from './responses/contact.response';
@@ -15,6 +15,18 @@ export class ContactService {
       username: contact.username,
       avatar: contact.avatar,
     };
+  }
+
+  async checkContactMustExists(username: string, id: number): Promise<Contact> {
+    const contact = await this.prismaService.contact.findFirst({
+      where: { username, id },
+    });
+
+    if (!contact) {
+      throw new NotFoundException('Contact tidak ditemukan');
+    }
+
+    return contact;
   }
 
   async create(
@@ -41,9 +53,10 @@ export class ContactService {
     return contacts.map((contact) => this.toContactResponse(contact));
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} contact`;
-  // }
+  async findOne(username: string, id: number): Promise<ContactResponse> {
+    const contact = await this.checkContactMustExists(username, id);
+    return this.toContactResponse(contact);
+  }
 
   // update(id: number, reqBody: UpdateContactDto) {
   //   return `This action updates a #${id} contact`;

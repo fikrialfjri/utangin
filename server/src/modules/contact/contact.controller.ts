@@ -8,6 +8,8 @@ import {
   UseInterceptors,
   UnsupportedMediaTypeException,
   Get,
+  ParseIntPipe,
+  Param,
 } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
@@ -71,6 +73,17 @@ export class ContactController {
     return {
       message: 'Data contact berhasil dimuat',
       data: await this.contactService.findAll(req.user.username),
+    };
+  }
+
+  @Get(':id')
+  async findOne(
+    @Req() req: Request & { user: { username: string } },
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<BaseResponse<ContactResponse>> {
+    return {
+      message: 'Data detail contact berhasil dimuat',
+      data: await this.contactService.findOne(req.user.username, id),
     };
   }
 }
