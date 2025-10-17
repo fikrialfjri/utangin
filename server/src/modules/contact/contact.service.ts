@@ -33,9 +33,13 @@ export class ContactService {
     return this.toContactResponse(newContact);
   }
 
-  // findAll() {
-  //   return `This action returns all contact`;
-  // }
+  async findAll(username: string): Promise<ContactResponse[]> {
+    const contacts = await this.prismaService.contact.findMany({
+      where: { username },
+    });
+
+    return contacts.map((contact) => this.toContactResponse(contact));
+  }
 
   // findOne(id: number) {
   //   return `This action returns a #${id} contact`;

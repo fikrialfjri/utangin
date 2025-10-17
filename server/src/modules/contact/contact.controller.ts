@@ -7,6 +7,7 @@ import {
   UseGuards,
   UseInterceptors,
   UnsupportedMediaTypeException,
+  Get,
 } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
@@ -60,6 +61,16 @@ export class ContactController {
         reqBody,
         avatar?.filename,
       ),
+    };
+  }
+
+  @Get()
+  async findAll(
+    @Req() req: Request & { user: { username: string } },
+  ): Promise<BaseResponse<ContactResponse[]>> {
+    return {
+      message: 'Data contact berhasil dimuat',
+      data: await this.contactService.findAll(req.user.username),
     };
   }
 }
