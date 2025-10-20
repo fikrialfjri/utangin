@@ -21,10 +21,16 @@ import { JwtAuthGuard } from 'src/common/auth/guards/logged-in.guard';
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
-  // @Post()
-  // create(@Body() createTransactionDto: CreateTransactionDto) {
-  //   return this.transactionService.create(createTransactionDto);
-  // }
+  @Post()
+  async create(
+    @Req() req: Request & { user: { username: string } },
+    @Body() reqBody: CreateTransactionDto,
+  ): Promise<BaseResponse<TransactionResponse>> {
+    return {
+      message: 'Data transaksi berhasil dibuat',
+      data: await this.transactionService.create(req.user.username, reqBody),
+    };
+  }
 
   @Get()
   async findAll(
