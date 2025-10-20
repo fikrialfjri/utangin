@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionResponse } from './responses/transaction.response';
@@ -24,6 +24,21 @@ export class TransactionService {
       ...(transaction.description && { description: transaction.description }),
       ...(transaction.due_date && { due_date: transaction.due_date }),
     };
+  }
+
+  async checkTransactionMustExists(
+    username: string,
+    id: number,
+  ): Promise<Transaction> {
+    const transaction = await this.prismaService.transaction.findFirst({
+      where: { username, id },
+    });
+
+    if (!transaction) {
+      throw new NotFoundException('Transaksi tidak ditemukan');
+    }
+
+    return transaction;
   }
 
   async create(
@@ -61,9 +76,10 @@ export class TransactionService {
     );
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} transaction`;
-  // }
+  async findOne(username: string, id: number): Promise<TransactionResponse> {
+    const transaction = await this.checkTransactionMustExists(username, id);
+    return this.toTransactionResponse(transaction);
+  }
 
   // update(id: number, updateTransactionDto: UpdateTransactionDto) {
   //   return `This action updates a #${id} transaction`;

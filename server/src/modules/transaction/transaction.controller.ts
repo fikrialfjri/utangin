@@ -8,6 +8,7 @@ import {
   Delete,
   Req,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -42,10 +43,13 @@ export class TransactionController {
     };
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.transactionService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(
+    @Req() req: Request & { user: { username: string } },
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.transactionService.findOne(req.user.username, id);
+  }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateTransactionDto: UpdateTransactionDto) {
