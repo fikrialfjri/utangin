@@ -1,26 +1,52 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { ContactResponse } from './responses/contact.response';
-import { Contact } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { UpdateContactDto } from './dto/update-contact.dto';
+import { TransactionService } from '../transaction/transaction.service';
+
+const contactInclude = {
+  user: true,
+  transactions: true,
+} satisfies Prisma.ContactInclude;
+
+type Contact = Prisma.ContactGetPayload<{ include: typeof contactInclude }>;
 
 @Injectable()
 export class ContactService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    @Inject(forwardRef(() => TransactionService))
+    private readonly transactionService: TransactionService,
+  ) {}
 
   toContactResponse(contact: Contact): ContactResponse {
     return {
       id: contact.id,
       name: contact.name,
-      username: contact.username,
       avatar: contact.avatar,
+      user: {
+        username: contact.user.username,
+        full_name: contact.user.full_name,
+        email: contact.user.email,
+        balance: contact.user.balance || 0,
+      },
+      transactions: contact.transactions.map((transaction) =>
+        this.transactionService.toTransactionResponse(transaction),
+      ),
     };
   }
 
   async checkContactMustExists(username: string, id: number): Promise<Contact> {
     const contact = await this.prismaService.contact.findFirst({
       where: { username, id },
+      include: contactInclude,
     });
 
     if (!contact) {
@@ -41,6 +67,7 @@ export class ContactService {
         username,
         avatar: avatarFilename && `/uploads/photos/${avatarFilename}`,
       },
+      include: contactInclude,
     });
 
     return this.toContactResponse(newContact);
@@ -49,6 +76,7 @@ export class ContactService {
   async findAll(username: string): Promise<ContactResponse[]> {
     const contacts = await this.prismaService.contact.findMany({
       where: { username },
+      include: contactInclude,
     });
 
     return contacts.map((contact) => this.toContactResponse(contact));
@@ -56,6 +84,7 @@ export class ContactService {
 
   async findOne(username: string, id: number): Promise<ContactResponse> {
     const contact = await this.checkContactMustExists(username, id);
+
     return this.toContactResponse(contact);
   }
 
@@ -74,6 +103,7 @@ export class ContactService {
         username,
         avatar: avatarFilename && `/uploads/photos/${avatarFilename}`,
       },
+      include: contactInclude,
     });
 
     return this.toContactResponse(updatedContact);
@@ -84,6 +114,7 @@ export class ContactService {
 
     const contact = await this.prismaService.contact.delete({
       where: { username, id },
+      include: contactInclude,
     });
 
     return this.toContactResponse(contact);
