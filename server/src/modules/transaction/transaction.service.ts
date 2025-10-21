@@ -92,8 +92,6 @@ export class TransactionService {
       Number(reqBody.contact_id),
     );
 
-    console.log(reqBody, '<<<<');
-
     const updatedTransaction = await this.prismaService.transaction.update({
       where: { username, id },
       data: {
@@ -111,7 +109,13 @@ export class TransactionService {
     return this.toTransactionResponse(updatedTransaction);
   }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} transaction`;
-  // }
+  async remove(username: string, id: number) {
+    await this.checkTransactionMustExists(username, id);
+
+    const deletedTransaction = await this.prismaService.transaction.delete({
+      where: { username, id },
+    });
+
+    return this.toTransactionResponse(deletedTransaction);
+  }
 }

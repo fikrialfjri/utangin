@@ -70,8 +70,14 @@ export class TransactionController {
     };
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.transactionService.remove(+id);
-  // }
+  @Delete(':id')
+  async remove(
+    @Req() req: Request & { user: { username: string } },
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<BaseResponse<TransactionResponse>> {
+    return {
+      message: 'Data transaksi berhasil dihapus',
+      data: await this.transactionService.remove(req.user.username, id),
+    };
+  }
 }
