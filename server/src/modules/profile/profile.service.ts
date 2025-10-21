@@ -2,15 +2,18 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { ProfileResponse } from './responses/profile.response';
 import { UpdateBalanceProfileDto } from './dto/update-balance-profile.dto';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly authService: AuthService,
+  ) {}
 
   async detail(username: string): Promise<ProfileResponse> {
     const user = await this.prismaService.user.findUnique({
       where: { username },
-      select: { username: true, full_name: true, email: true, balance: true },
     });
 
     if (!user) {
@@ -19,7 +22,7 @@ export class ProfileService {
       );
     }
 
-    return { ...user, balance: user.balance || 0 };
+    return this.authService.toUserResponse(user);
   }
 
   async updateBalance(
@@ -41,9 +44,8 @@ export class ProfileService {
       data: {
         balance: reqBody.balance,
       },
-      select: { username: true, full_name: true, email: true, balance: true },
     });
 
-    return { ...updatedBalanceUser, balance: updatedBalanceUser.balance || 0 };
+    return this.authService.toUserResponse(updatedBalanceUser);
   }
 }

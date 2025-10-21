@@ -3,12 +3,13 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthResponse } from './responses/auth.response';
+import { AuthResponse, UserResponse } from './responses/auth.response';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,15 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
   ) {}
+
+  toUserResponse(user: User): UserResponse {
+    return {
+      username: user.username,
+      full_name: user.full_name,
+      email: user.email,
+      balance: user.balance ?? 0,
+    };
+  }
 
   async register(request: RegisterAuthDto): Promise<AuthResponse> {
     const { username, email } = request;
@@ -40,18 +50,13 @@ export class AuthService {
       data: request,
     });
 
-    const payload = {
-      username: user.username,
-      full_name: user.full_name,
-      email: user.full_name,
-      balance: user.balance || 0,
-    };
+    const userResponse = this.toUserResponse(user);
 
-    const access_token = await this.jwtService.signAsync(payload);
+    const access_token = await this.jwtService.signAsync(userResponse);
 
     return {
       access_token,
-      user: payload,
+      user: userResponse,
     };
   }
 
@@ -75,15 +80,10 @@ export class AuthService {
       throw new UnauthorizedException('Email atau password tidak sesuai');
     }
 
-    const payload = {
-      username: findUserEmail.username,
-      full_name: findUserEmail.full_name,
-      email: findUserEmail.email,
-      balance: findUserEmail.balance || 0,
-    };
+    const userResponse = this.toUserResponse(findUserEmail);
 
-    const access_token = await this.jwtService.signAsync(payload);
+    const access_token = await this.jwtService.signAsync(userResponse);
 
-    return { access_token, user: payload };
+    return { access_token, user: userResponse };
   }
 }

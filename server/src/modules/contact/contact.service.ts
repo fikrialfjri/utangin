@@ -10,6 +10,7 @@ import { ContactResponse } from './responses/contact.response';
 import { Prisma } from '@prisma/client';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import { TransactionService } from '../transaction/transaction.service';
+import { AuthService } from '../auth/auth.service';
 
 const contactInclude = {
   user: true,
@@ -24,6 +25,7 @@ export class ContactService {
     private readonly prismaService: PrismaService,
     @Inject(forwardRef(() => TransactionService))
     private readonly transactionService: TransactionService,
+    private readonly authService: AuthService,
   ) {}
 
   toContactResponse(contact: Contact): ContactResponse {
@@ -31,12 +33,7 @@ export class ContactService {
       id: contact.id,
       name: contact.name,
       avatar: contact.avatar,
-      user: {
-        username: contact.user.username,
-        full_name: contact.user.full_name,
-        email: contact.user.email,
-        balance: contact.user.balance || 0,
-      },
+      user: this.authService.toUserResponse(contact.user),
       transactions: contact.transactions.map((transaction) =>
         this.transactionService.toTransactionResponse(transaction),
       ),
