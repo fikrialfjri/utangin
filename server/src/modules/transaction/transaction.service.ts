@@ -81,9 +81,35 @@ export class TransactionService {
     return this.toTransactionResponse(transaction);
   }
 
-  // update(id: number, updateTransactionDto: UpdateTransactionDto) {
-  //   return `This action updates a #${id} transaction`;
-  // }
+  async update(
+    username: string,
+    id: number,
+    reqBody: UpdateTransactionDto,
+  ): Promise<TransactionResponse> {
+    await this.checkTransactionMustExists(username, id);
+    await this.contactService.checkContactMustExists(
+      username,
+      Number(reqBody.contact_id),
+    );
+
+    console.log(reqBody, '<<<<');
+
+    const updatedTransaction = await this.prismaService.transaction.update({
+      where: { username, id },
+      data: {
+        username,
+        contact_id: reqBody.contact_id,
+        type: reqBody.type,
+        amount: reqBody.amount,
+        date: reqBody.date && new Date(reqBody.date),
+        status: reqBody.status,
+        ...(reqBody.description && { description: reqBody.description }),
+        ...(reqBody.due_date && { due_date: new Date(reqBody.due_date) }),
+      },
+    });
+
+    return this.toTransactionResponse(updatedTransaction);
+  }
 
   // remove(id: number) {
   //   return `This action removes a #${id} transaction`;

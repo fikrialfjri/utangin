@@ -3,12 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Req,
   UseGuards,
   ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -44,17 +44,31 @@ export class TransactionController {
   }
 
   @Get(':id')
-  findOne(
+  async findOne(
     @Req() req: Request & { user: { username: string } },
     @Param('id', ParseIntPipe) id: number,
-  ) {
-    return this.transactionService.findOne(req.user.username, id);
+  ): Promise<BaseResponse<TransactionResponse>> {
+    return {
+      message: 'Data detail transaksi berhasil dimuat',
+      data: await this.transactionService.findOne(req.user.username, id),
+    };
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateTransactionDto: UpdateTransactionDto) {
-  //   return this.transactionService.update(+id, updateTransactionDto);
-  // }
+  @Put(':id')
+  async update(
+    @Req() req: Request & { user: { username: string } },
+    @Param('id', ParseIntPipe) id: number,
+    @Body() reqBody: UpdateTransactionDto,
+  ): Promise<BaseResponse<TransactionResponse>> {
+    return {
+      message: 'Data transaksi berhasil diperbarui',
+      data: await this.transactionService.update(
+        req.user.username,
+        id,
+        reqBody,
+      ),
+    };
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

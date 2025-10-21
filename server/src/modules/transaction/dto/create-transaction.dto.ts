@@ -25,7 +25,14 @@ const createTransactionSchema = z.object({
     })
     .max(255, 'Deskripsi tidak boleh lebih dari 255 karakter')
     .optional(),
-  status: z.enum(TransactionStatus).optional(),
+  status: z.enum(TransactionStatus, {
+    error: (iss) => {
+      console.log(iss, '<><>');
+
+      if (!iss.input) return 'Status wajib diisi';
+      if (iss.code === 'invalid_value') return 'Status tidak valid';
+    },
+  }),
   date: z.iso.date({
     error: (iss) => {
       if (iss.code === 'invalid_format')
@@ -51,8 +58,8 @@ export class CreateTransactionDto {
     public readonly type: TransactionType,
     public readonly amount: number,
     public readonly date: string,
+    public readonly status: TransactionStatus,
     public readonly description?: string,
-    public readonly status?: TransactionStatus,
     public readonly due_date?: string,
   ) {}
 }
