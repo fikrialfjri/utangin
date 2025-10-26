@@ -44,9 +44,9 @@
 }
 
 body {
-  @apply bg-[var(--color-neutral-50)];
+  @apply bg-neutral-5/35;
 }
 
 .app-container {
-  @apply bg-shades-white mx-auto w-xl max-w-xl;
+  @apply bg-shades-white mx-auto min-h-screen w-xl max-w-xl;
 }
