@@ -5,21 +5,33 @@
   "tabWidth": 2,
   "useTabs": false,
   "importOrder": [
+    "<BUILTIN_MODULES>",
+    "",
     "^react",
     "^react/(.*)$",
+    "",
+    "^vite",
+    "^vite/(.*)$",
+    "",
     "<THIRD_PARTY_MODULES>",
+    "",
     "^@/components/(.*)$",
+    "",
     "^@/hooks/(.*)$",
+    "",
     "^@/libs/(.*)$",
+    "",
     "^@/utils/(.*)$",
+    "",
     "^@/assets/(.*)$",
+    "",
     "^[./]"
   ],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
   "plugins": [
-    "@trivago/prettier-plugin-sort-imports",
-    "prettier-plugin-tailwindcss"
+    "prettier-plugin-tailwindcss",
+    "@ianvs/prettier-plugin-sort-imports"
   ],
   "pluginSearchDirs": false
 }
