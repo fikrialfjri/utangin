@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
+  --font-plus-jakarta-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-sans: var(--font-plus-jakarta-sans);
 }
 
@@ -44,7 +45,7 @@
 }
 
 body {
-  @apply bg-neutral-5/35;
+  @apply bg-neutral-5/35 font-sans;
 }
 
 .app-container {
