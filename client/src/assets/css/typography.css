@@ -1,0 +1,50 @@
+@theme inline {
+  --typo-title-size-xl: 34px;
+  --typo-title-lineheight-xl: 41px;
+  --typo-title-size-lg: 28px;
+  --typo-title-lineheight-lg: 34px;
+  --typo-title-size-md: 24px;
+  --typo-title-lineheight-md: 30px;
+  --typo-title-size-sm: 22px;
+  --typo-title-lineheight-sm: 28px;
+  --typo-headline-size-lg: 20px;
+  --typo-headline-lineheight-lg: 26px;
+  --typo-headline-size-md: 18px;
+  --typo-headline-lineheight-md: 24px;
+  --typo-body-size-lg: 16px;
+  --typo-body-lineheight-lg: 22px;
+  --typo-body-size-md: 14px;
+  --typo-body-lineheight-md: 20px;
+  --typo-caption-size-md: 12px;
+  --typo-caption-lineheight-md: 16px;
+  --typo-caption-size-sm: 10px;
+  --typo-caption-lineheight-sm: 14px;
+}
+
+@utility typo-title-* {
+  font-family: var(--font-sans);
+  font-size: --value(--typo-title-size-*);
+  line-height: --value(--typo-title-lineheight-*);
+  font-weight: 800;
+}
+
+@utility typo-headline-* {
+  font-family: var(--font-sans);
+  font-size: --value(--typo-headline-size-*);
+  line-height: --value(--typo-headline-lineheight-*);
+  font-weight: 700;
+}
+
+@utility typo-body-* {
+  font-family: var(--font-sans);
+  font-size: --value(--typo-body-size-*);
+  line-height: --value(--typo-body-lineheight-*);
+  font-weight: 500;
+}
+
+@utility typo-caption-* {
+  font-family: var(--font-sans);
+  font-size: --value(--typo-caption-size-*);
+  line-height: --value(--typo-caption-lineheight-*);
+  font-weight: 400;
+}

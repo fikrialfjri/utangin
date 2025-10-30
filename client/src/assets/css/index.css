@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@import './typography.css';
 
 @theme inline {
   --font-plus-jakarta-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
