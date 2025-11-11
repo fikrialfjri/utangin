@@ -1,5 +1,5 @@
 import {
-  HttpException,
+  ConflictException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -34,14 +34,14 @@ export class AuthService {
       where: { username },
     });
     if (existingUserUsername) {
-      throw new HttpException('Username sudah tersedia', 400);
+      throw new ConflictException('Username sudah tersedia');
     }
 
     const existingUserEmail = await this.prismaService.user.findUnique({
       where: { email },
     });
     if (existingUserEmail) {
-      throw new HttpException('Email sudah tersedia', 400);
+      throw new ConflictException('Email sudah tersedia');
     }
 
     request.password = await bcrypt.hash(request.password, 10);
@@ -68,7 +68,9 @@ export class AuthService {
     });
 
     if (!findUserEmail) {
-      throw new UnauthorizedException('Email atau password tidak sesuai');
+      throw new UnauthorizedException('Email atau password tidak sesuai', {
+        description: 'Wrong Credentials',
+      });
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -77,7 +79,9 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Email atau password tidak sesuai');
+      throw new UnauthorizedException('Email atau password tidak sesuai', {
+        description: 'Wrong Credentials',
+      });
     }
 
     const userResponse = this.toUserResponse(findUserEmail);

@@ -7,8 +7,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useGlobalPipes(new ZodValidationPipe());
-
   app.useStaticAssets('public');
+  app.enableCors();
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
