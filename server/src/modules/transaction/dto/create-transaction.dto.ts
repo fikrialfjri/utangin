@@ -27,8 +27,6 @@ const createTransactionSchema = z.object({
     .optional(),
   status: z.enum(TransactionStatus, {
     error: (iss) => {
-      console.log(iss, '<><>');
-
       if (!iss.input) return 'Status wajib diisi';
       if (iss.code === 'invalid_value') return 'Status tidak valid';
     },

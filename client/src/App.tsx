@@ -1,9 +1,7 @@
+import MainRouter from '@/router';
+
 const App = () => {
-  return (
-    <main className="app-container">
-      <p className="typo-title-xl">Utangin</p>
-    </main>
-  );
+  return <MainRouter />;
 };
 
 export default App;

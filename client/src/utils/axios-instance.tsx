@@ -2,9 +2,16 @@ import axios from 'axios';
 
 import { clearStorages, getToken } from '@/utils/storages';
 
-export const BASE_URL = import.meta.env.UTANGIN_API_BASE_URL;
+export const BASE_URL = import.meta.env.VITE_UTANGIN_API_BASE_URL;
 
-axios.interceptors.request.use(
+const instance = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+instance.interceptors.request.use(
   (config) => {
     const token = getToken();
     if (token) {
@@ -18,7 +25,7 @@ axios.interceptors.request.use(
   },
 );
 
-axios.interceptors.response.use(
+instance.interceptors.response.use(
   (response) => {
     return response;
   },
@@ -28,7 +35,10 @@ axios.interceptors.response.use(
     }
 
     if (err.response?.data) {
-      if (err.response.status === 401) {
+      if (
+        err.response.status === 401 &&
+        err.response.data.error !== 'Wrong Credentials'
+      ) {
         clearStorages();
         location.reload();
       }
@@ -40,3 +50,5 @@ axios.interceptors.response.use(
     }
   },
 );
+
+export default instance;
