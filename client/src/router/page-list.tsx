@@ -6,6 +6,22 @@ const pageList = {
       path: '/',
       component: lazy(() => import('@/pages/private/home')),
     },
+    {
+      path: '/debt',
+      component: lazy(() => import('@/pages/private/debt')),
+    },
+    {
+      path: '/receivable',
+      component: lazy(() => import('@/pages/private/receivable')),
+    },
+    {
+      path: '/contact',
+      component: lazy(() => import('@/pages/private/contact')),
+    },
+    {
+      path: '/setting',
+      component: lazy(() => import('@/pages/private/setting')),
+    },
   ],
   auth: [
     {

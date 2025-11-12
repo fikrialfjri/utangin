@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
-import { getNavItem, joinClassnames } from '@/utils/common';
+import type { NavItem } from '@/types/commons';
+
+import { getNavItem, joinClassnames } from '@/utils/commons';
 
 import ContactIconActive from '@/assets/icons/contact-active.svg?react';
 import ContactIcon from '@/assets/icons/contact.svg?react';
@@ -11,22 +13,27 @@ import HomeIcon from '@/assets/icons/home.svg?react';
 import ReceivableIcon from '@/assets/icons/receivable.svg?react';
 import SettingIcon from '@/assets/icons/setting.svg?react';
 
+const navItems: NavItem[] = [
+  getNavItem('Home', '/', HomeIcon, HomeIconActive),
+  getNavItem('Hutang', '/debt', DebtIcon),
+  getNavItem('Piutang', '/receivable', ReceivableIcon),
+  getNavItem('Kontak', '/contact', ContactIcon, ContactIconActive),
+  getNavItem('Pengaturan', '/setting', SettingIcon),
+];
+
 const BottomNavigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [selectedMenu, setSelectedMenu] = useState<string>('/');
-
-  const navItems = [
-    getNavItem('Home', '/', HomeIcon, HomeIconActive),
-    getNavItem('Hutang', '/debt', DebtIcon),
-    getNavItem('Piutang', '/receivable', ReceivableIcon),
-    getNavItem('Kontak', '/contact', ContactIcon, ContactIconActive),
-    getNavItem('Pengaturan', '/setting', SettingIcon),
-  ];
 
   useEffect(() => {
     setSelectedMenu(location.pathname);
   }, [location]);
+
+  const handleClickNav = (item: NavItem) => {
+    navigate(item.key);
+  };
 
   return (
     <nav className="bg-white fixed z-50 w-full max-w-xl -translate-x-1/2 bottom-0 left-1/2 grid grid-cols-5 px-3 pb-4 pt-5 border-t border-t-neutral-5 rounded-t-4xl">
@@ -47,7 +54,7 @@ const BottomNavigation = () => {
                   ? 'text-primary'
                   : 'text-neutral-4 hover:text-primary-300',
               ])}
-              onClick={() => setSelectedMenu(item.key)}
+              onClick={() => handleClickNav(item)}
             >
               {ChosenIcon ? <ChosenIcon /> : null}
               <p

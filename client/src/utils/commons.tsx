@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react';
+import type { NavItem } from '@/types/commons';
 
 import { removeToken } from '@/utils/storages';
 
@@ -8,11 +8,11 @@ export const logoutUser = () => {
 };
 
 export const getNavItem = (
-  label: string,
-  key: string,
-  icon?: ComponentType<{ className?: string }>,
-  iconActive?: ComponentType<{ className?: string }>,
-) => {
+  label: NavItem['label'],
+  key: NavItem['key'],
+  icon?: NavItem['icon'],
+  iconActive?: NavItem['iconActive'],
+): NavItem => {
   return {
     label,
     key,
