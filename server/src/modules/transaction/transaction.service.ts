@@ -8,8 +8,16 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionResponse } from './responses/transaction.response';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { Transaction } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { ContactService } from '../contact/contact.service';
+
+const transactionInclude = {
+  contact: true,
+} satisfies Prisma.TransactionInclude;
+
+type Transaction = Prisma.TransactionGetPayload<{
+  include: typeof transactionInclude;
+}>;
 
 @Injectable()
 export class TransactionService {
@@ -22,13 +30,17 @@ export class TransactionService {
   toTransactionResponse(transaction: Transaction): TransactionResponse {
     return {
       id: transaction.id,
-      contact_id: transaction.contact_id,
       type: transaction.type,
       amount: transaction.amount,
       status: transaction.status,
       date: transaction.date,
       ...(transaction.description && { description: transaction.description }),
       ...(transaction.due_date && { due_date: transaction.due_date }),
+      contact: {
+        id: transaction.contact.id,
+        name: transaction.contact.name,
+        avatar: transaction.contact.avatar,
+      },
     };
   }
 
@@ -38,6 +50,7 @@ export class TransactionService {
   ): Promise<Transaction> {
     const transaction = await this.prismaService.transaction.findFirst({
       where: { username, id },
+      include: transactionInclude,
     });
 
     if (!transaction) {
@@ -67,6 +80,7 @@ export class TransactionService {
         ...(reqBody.description && { description: reqBody.description }),
         ...(reqBody.due_date && { due_date: new Date(reqBody.due_date) }),
       },
+      include: transactionInclude,
     });
 
     return this.toTransactionResponse(newTransaction);
@@ -75,6 +89,7 @@ export class TransactionService {
   async findAll(username: string): Promise<TransactionResponse[]> {
     const transactions = await this.prismaService.transaction.findMany({
       where: { username },
+      include: transactionInclude,
     });
 
     return transactions.map((transaction) =>
@@ -110,6 +125,7 @@ export class TransactionService {
         ...(reqBody.description && { description: reqBody.description }),
         ...(reqBody.due_date && { due_date: new Date(reqBody.due_date) }),
       },
+      include: transactionInclude,
     });
 
     return this.toTransactionResponse(updatedTransaction);
@@ -120,6 +136,7 @@ export class TransactionService {
 
     const deletedTransaction = await this.prismaService.transaction.delete({
       where: { username, id },
+      include: transactionInclude,
     });
 
     return this.toTransactionResponse(deletedTransaction);

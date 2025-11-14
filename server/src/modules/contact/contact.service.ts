@@ -33,10 +33,6 @@ export class ContactService {
       id: contact.id,
       name: contact.name,
       avatar: contact.avatar,
-      user: this.authService.toUserResponse(contact.user),
-      transactions: contact.transactions.map((transaction) =>
-        this.transactionService.toTransactionResponse(transaction),
-      ),
     };
   }
 
