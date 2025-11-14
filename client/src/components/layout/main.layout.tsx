@@ -7,7 +7,9 @@ import BottomNavigation from './components/bottom-navigation';
 const MainLayout = () => {
   return (
     <RootLayout>
-      <Outlet />
+      <div className="p-6">
+        <Outlet />
+      </div>
       <BottomNavigation />
     </RootLayout>
   );

@@ -1,4 +1,7 @@
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
+
+export type StringMap = { [key: string]: string };
+export type ReactNodeMap = { [key: string]: ReactNode };
 
 export interface NavItem {
   label: string;
