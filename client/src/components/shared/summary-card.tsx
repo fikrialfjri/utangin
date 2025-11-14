@@ -1,6 +1,6 @@
 import type { ReactNodeMap, StringMap } from '@/types/commons';
 
-import { isMinusNumber, joinClassnames } from '@/utils/commons';
+import { isMinusNumber, isZeroNumber, joinClassnames } from '@/utils/commons';
 
 import CurrentSaldoIcon from '@/assets/icons/current-saldo.svg?react';
 import DebtIcon from '@/assets/icons/debt.svg?react';
@@ -13,6 +13,7 @@ interface IProps {
   value: number;
   withShadow?: boolean;
   withColorValue?: boolean;
+  className?: string;
 }
 
 const SummaryCard = ({
@@ -20,6 +21,7 @@ const SummaryCard = ({
   value,
   withShadow,
   withColorValue,
+  className,
 }: IProps) => {
   const wrapperClassnames: StringMap = {
     potential: 'bg-primary text-shades-white',
@@ -51,6 +53,7 @@ const SummaryCard = ({
         'p-3 rounded-[18px]',
         wrapperClassnames[variant],
         withShadow ? 'shadow-primary-3' : '',
+        className,
       ])}
     >
       <div className="flex items-center gap-1">
@@ -65,7 +68,9 @@ const SummaryCard = ({
           withColorValue
             ? isMinusNumber(value)
               ? 'text-danger'
-              : 'text-success'
+              : isZeroNumber(value)
+                ? ''
+                : 'text-success'
             : '',
         ])}
       >

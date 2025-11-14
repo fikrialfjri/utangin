@@ -21,8 +21,9 @@ export const getNavItem = (
   };
 };
 
-export const joinClassnames = (classes: string[]) => {
+export const joinClassnames = (classes: (string | undefined)[]) => {
   return classes.filter(Boolean).join(' ');
 };
 
 export const isMinusNumber = (value: number): boolean => value < 0;
+export const isZeroNumber = (value: number): boolean => value === 0;
