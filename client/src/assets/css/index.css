@@ -64,5 +64,5 @@ body {
 }
 
 .app-container {
-  @apply bg-shades-white mx-auto min-h-screen w-xl max-w-xl;
+  @apply bg-shades-white mx-auto min-h-screen w-full max-w-xl;
 }
