@@ -50,7 +50,7 @@ const SummaryCard = ({
   return (
     <div
       className={joinClassnames([
-        'p-3 rounded-[18px]',
+        'p-3 rounded-[18px] hover:scale-105 transition hover:shadow-primary-4',
         wrapperClassnames[variant],
         withShadow ? 'shadow-primary-3' : '',
         className,
