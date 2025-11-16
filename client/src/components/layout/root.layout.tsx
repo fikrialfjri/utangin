@@ -1,7 +1,7 @@
-import React from 'react';
+import { type ReactNode } from 'react';
 
 interface IProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const RootLayout = ({ children }: IProps) => {
