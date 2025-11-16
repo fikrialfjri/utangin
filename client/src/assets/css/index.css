@@ -57,6 +57,9 @@
   --shadow-primary-2:
     0 8px 28px -6px rgb(94, 55, 246, 0.12),
     0 18px 88px -4px rgb(94, 55, 246, 0.14);
+
+  /* Breakpoint */
+  --breakpoint-xs: 36rem;
 }
 
 body {
