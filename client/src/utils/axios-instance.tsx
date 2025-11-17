@@ -1,11 +1,11 @@
 import axios from 'axios';
 
+import { UTANGIN_API_BASE_URL } from '@/libs/constants';
+
 import { clearStorages, getToken } from '@/utils/storages';
 
-export const BASE_URL = import.meta.env.VITE_UTANGIN_API_BASE_URL;
-
 const instance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: UTANGIN_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

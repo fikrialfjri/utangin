@@ -9,3 +9,14 @@ export interface NavItem {
   icon?: ComponentType<{ className?: string }>;
   iconActive?: ComponentType<{ className?: string }>;
 }
+
+export interface IContact {
+  id: number;
+  avatar?: string | null;
+  name: string;
+}
+
+export interface ISummary {
+  nominal: number;
+  recent_contacts?: IContact[];
+}

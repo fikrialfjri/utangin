@@ -21,7 +21,7 @@ export const getNavItem = (
   };
 };
 
-export const joinClassnames = (classes: (string | undefined)[]) => {
+export const joinClassnames = (classes: (string | undefined)[]): string => {
   return classes.filter(Boolean).join(' ');
 };
 

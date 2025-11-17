@@ -41,21 +41,18 @@ const HomePage = () => {
       <section className="grid grid-cols-2 gap-3">
         <SummaryCard
           variant="potential"
-          value={summaryData.potential?.nominal}
+          data={summaryData.potential}
           className="col-span-2"
           withShadow
         />
-        <SummaryCard variant="current" value={summaryData.current?.nominal} />
+        <SummaryCard variant="current" data={summaryData.current} />
         <SummaryCard
           variant="receivable-debt"
-          value={summaryData.receivable_debt?.nominal}
+          data={summaryData.receivable_debt}
           withColorValue
         />
-        <SummaryCard variant="debt" value={summaryData.debt?.nominal} />
-        <SummaryCard
-          variant="receivable"
-          value={summaryData.receivable?.nominal}
-        />
+        <SummaryCard variant="debt" data={summaryData.debt} />
+        <SummaryCard variant="receivable" data={summaryData.receivable} />
       </section>
     </div>
   );

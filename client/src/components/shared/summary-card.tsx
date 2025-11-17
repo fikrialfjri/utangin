@@ -1,4 +1,4 @@
-import type { ReactNodeMap, StringMap } from '@/types/commons';
+import type { ISummary, ReactNodeMap, StringMap } from '@/types/commons';
 
 import { isMinusNumber, isZeroNumber, joinClassnames } from '@/utils/commons';
 
@@ -8,9 +8,11 @@ import PotentialSaldoIcon from '@/assets/icons/potential-saldo.svg?react';
 import ReceivableDebtIcon from '@/assets/icons/receivable-debt.svg?react';
 import ReceivableIcon from '@/assets/icons/receivable.svg?react';
 
+import { AvatarGroup } from './avatar';
+
 interface IProps {
   variant: 'potential' | 'current' | 'receivable-debt' | 'debt' | 'receivable';
-  value: number;
+  data: ISummary;
   withShadow?: boolean;
   withColorValue?: boolean;
   className?: string;
@@ -18,7 +20,7 @@ interface IProps {
 
 const SummaryCard = ({
   variant,
-  value,
+  data,
   withShadow,
   withColorValue,
   className,
@@ -50,32 +52,42 @@ const SummaryCard = ({
   return (
     <div
       className={joinClassnames([
-        'p-3 rounded-[18px] hover:scale-105 transition hover:shadow-primary-4',
+        'p-3 rounded-[18px] flex flex-col gap-2.5 hover:scale-105 transition hover:shadow-primary-4',
         wrapperClassnames[variant],
         withShadow ? 'shadow-primary-3' : '',
         className,
       ])}
     >
-      <div className="flex items-center gap-1">
-        <div className="*:w-3.5 *:h-3.5">{renderedIcons[variant]}</div>
-        <label className="typo-body-md font-normal!">
-          {renderedLabel[variant]}
-        </label>
+      <div>
+        <div className="flex items-center gap-1">
+          <div className="*:w-3.5 *:h-3.5">{renderedIcons[variant]}</div>
+          <label className="typo-body-md font-normal!">
+            {renderedLabel[variant]}
+          </label>
+        </div>
+        <h3
+          className={joinClassnames([
+            'typo-headline-md font-bold!',
+            withColorValue
+              ? isMinusNumber(data.nominal)
+                ? 'text-danger'
+                : isZeroNumber(data.nominal)
+                  ? ''
+                  : 'text-success'
+              : '',
+          ])}
+        >
+          {isMinusNumber(data.nominal) ? '-' : ''}Rp
+          {Math.abs(data.nominal)?.toLocaleString()}
+        </h3>
       </div>
-      <h3
-        className={joinClassnames([
-          'typo-headline-md font-bold!',
-          withColorValue
-            ? isMinusNumber(value)
-              ? 'text-danger'
-              : isZeroNumber(value)
-                ? ''
-                : 'text-success'
-            : '',
-        ])}
-      >
-        {isMinusNumber(value) ? '-' : ''}Rp{Math.abs(value)?.toLocaleString()}
-      </h3>
+      {variant === 'debt' || variant === 'receivable'
+        ? data.recent_contacts && (
+            <div>
+              <AvatarGroup data={data.recent_contacts} />
+            </div>
+          )
+        : null}
     </div>
   );
 };
