@@ -6,10 +6,15 @@ import {
 } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
-import { TransactionResponse } from './responses/transaction.response';
+import {
+  GroupedTransactionResponse,
+  TransactionResponse,
+} from './responses/transaction.response';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { ContactService } from '../contact/contact.service';
+import { GetTransactionDto } from './dto/get-transaction.dto';
+import dayjs from 'dayjs';
 
 const transactionInclude = {
   contact: true,
@@ -42,6 +47,25 @@ export class TransactionService {
         avatar: transaction.contact.avatar,
       },
     };
+  }
+
+  groupTransactionsByMonth(
+    transactions: TransactionResponse[],
+  ): GroupedTransactionResponse[] {
+    const grouped: { [month: string]: TransactionResponse[] } = {};
+    transactions.forEach((tx) => {
+      const month: string = dayjs(tx.date).format('YYYY-MM');
+      if (!grouped[month]) grouped[month] = [];
+      grouped[month].push(tx);
+    });
+
+    return Object.entries(grouped)
+      .map(([month, txs]) => ({
+        month,
+        label: dayjs(month).format('MMM YYYY'),
+        transactions: txs,
+      }))
+      .sort((a, b) => b.month.localeCompare(a.month)); // Latest first
   }
 
   async checkTransactionMustExists(
@@ -86,15 +110,43 @@ export class TransactionService {
     return this.toTransactionResponse(newTransaction);
   }
 
-  async findAll(username: string): Promise<TransactionResponse[]> {
-    const transactions = await this.prismaService.transaction.findMany({
-      where: { username },
-      include: transactionInclude,
-    });
+  async findAll(
+    username: string,
+    reqParams: GetTransactionDto,
+  ): Promise<{
+    data: TransactionResponse[] | GroupedTransactionResponse[];
+    total: number;
+  }> {
+    const { page, limit: take, group_by } = reqParams;
 
-    return transactions.map((transaction) =>
-      this.toTransactionResponse(transaction),
-    );
+    const skip: number = (page! - 1) * take!;
+
+    const [transactions, count] = await Promise.all([
+      this.prismaService.transaction.findMany({
+        where: { username },
+        include: transactionInclude,
+        orderBy: { date: 'desc' },
+        ...(take ? { skip, take } : {}),
+      }),
+      this.prismaService.transaction.count({ where: { username } }),
+    ]);
+
+    let result: TransactionResponse[] | GroupedTransactionResponse[] =
+      transactions.map((transaction) =>
+        this.toTransactionResponse(transaction),
+      );
+    if (group_by === 'month') {
+      result = this.groupTransactionsByMonth(result);
+
+      if (page && take) {
+        result = result.slice(skip, skip + take);
+      }
+    }
+
+    return {
+      data: result,
+      total: count,
+    };
   }
 
   async findOne(username: string, id: number): Promise<TransactionResponse> {

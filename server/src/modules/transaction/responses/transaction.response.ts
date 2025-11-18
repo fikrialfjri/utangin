@@ -11,3 +11,9 @@ export class TransactionResponse {
   due_date?: Date;
   contact: ContactResponse;
 }
+
+export class GroupedTransactionResponse {
+  month: string;
+  label: string;
+  transactions: TransactionResponse[];
+}

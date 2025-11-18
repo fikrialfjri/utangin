@@ -9,13 +9,18 @@ import {
   UseGuards,
   ParseIntPipe,
   Put,
+  Query,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { BaseResponse } from 'src/common/interfaces/base-response.interface';
-import { TransactionResponse } from './responses/transaction.response';
+import {
+  GroupedTransactionResponse,
+  TransactionResponse,
+} from './responses/transaction.response';
 import { JwtAuthGuard } from 'src/common/auth/guards/logged-in.guard';
+import { GetTransactionDto } from './dto/get-transaction.dto';
 
 @Controller('api/transaction')
 @UseGuards(JwtAuthGuard)
@@ -36,10 +41,24 @@ export class TransactionController {
   @Get()
   async findAll(
     @Req() req: Request & { user: { username: string } },
-  ): Promise<BaseResponse<TransactionResponse[]>> {
+    @Query() reqParams: GetTransactionDto,
+  ): Promise<
+    BaseResponse<TransactionResponse[] | GroupedTransactionResponse[]>
+  > {
+    const { page, limit } = reqParams;
+
+    const result = await this.transactionService.findAll(
+      req.user.username,
+      reqParams,
+    );
+
     return {
       message: 'Data list transaksi berhasil dimuat',
-      data: await this.transactionService.findAll(req.user.username),
+      data: result.data,
+      meta:
+        page && limit
+          ? { page, limit, total: result.total }
+          : { page: 1, limit: result.total, total: result.total },
     };
   }
 
