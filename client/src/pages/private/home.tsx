@@ -1,16 +1,26 @@
 import { useEffect, useState } from 'react';
 
+import type { ISummary, ITransaction } from '@/types/commons';
+import dayjs from 'dayjs';
+
+import List from '@/components/shared/list';
 import SummaryCard from '@/components/shared/summary-card';
 
 import instance from '@/utils/axios-instance';
 
-type Summary = {
-  potential: { nominal: number };
-  current: { nominal: number };
-  receivable_debt: { nominal: number };
-  debt: { nominal: number };
-  receivable: { nominal: number };
-};
+interface Summary {
+  potential: ISummary;
+  current: ISummary;
+  receivable_debt: ISummary;
+  debt: ISummary;
+  receivable: ISummary;
+}
+
+interface Transaction {
+  month: string;
+  label: string;
+  transactions: ITransaction[];
+}
 
 const defaultSummary: Summary = {
   potential: { nominal: 0 },
@@ -22,6 +32,7 @@ const defaultSummary: Summary = {
 
 const HomePage = () => {
   const [summaryData, setSummaryData] = useState<Summary>(defaultSummary);
+  const [transactionData, setTransactionData] = useState<Transaction[]>([]);
 
   useEffect(() => {
     _fetchData();
@@ -29,15 +40,19 @@ const HomePage = () => {
 
   const _fetchData = async () => {
     try {
-      const res = await instance.get('/dashboard/summary');
-      setSummaryData(res.data.data);
+      const [resSummary, resTransaction] = await Promise.all([
+        instance.get('/dashboard/summary'),
+        instance.get('/transaction?group_by=month'),
+      ]);
+      setSummaryData(resSummary.data.data);
+      setTransactionData(resTransaction.data.data);
     } catch (err) {
       console.error(err);
     }
   };
 
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       <section className="grid grid-cols-2 gap-3">
         <SummaryCard
           variant="potential"
@@ -53,6 +68,38 @@ const HomePage = () => {
         />
         <SummaryCard variant="debt" data={summaryData.debt} />
         <SummaryCard variant="receivable" data={summaryData.receivable} />
+      </section>
+      <section className="flex flex-col gap-3">
+        <h2 className="typo-headline-md font-bold! text-neutral-2">
+          Transaksi
+        </h2>
+        <ul className="flex flex-col gap-3">
+          {transactionData.map((dt) => (
+            <li key={dt.month} className="flex flex-col gap-3">
+              <h6 className="typo-caption-md font-semibold text-neutral-3">
+                {dt.label}
+              </h6>
+              <List
+                data={dt.transactions}
+                renderItem={(item) => (
+                  <List.Item key={item.id} variant={item.type.toLowerCase()}>
+                    <List.Item.Meta
+                      avatar={{
+                        src: item.contact.avatar,
+                        name: item.contact.name,
+                      }}
+                      title={item.contact.name}
+                      description={dayjs(item.contact.date).format(
+                        'DD MMM YYYY',
+                      )}
+                    />
+                    Rp{item.amount.toLocaleString()}
+                  </List.Item>
+                )}
+              />
+            </li>
+          ))}
+        </ul>
       </section>
     </div>
   );

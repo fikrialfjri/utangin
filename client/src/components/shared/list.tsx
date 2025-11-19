@@ -32,16 +32,16 @@ type ListComponent = FC<IListProps> & {
 
 const List: ListComponent = ({ data, renderItem }) => {
   return (
-    <div className="flex flex-col gap-3">
+    <ul className="flex flex-col gap-3">
       {data.map((item: any, idx: number) => (
-        <div
+        <li
           key={idx}
           className="p-3 border border-neutral-5 bg-shades-white rounded-[18px]"
         >
           {renderItem(item, idx)}
-        </div>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 };
 
