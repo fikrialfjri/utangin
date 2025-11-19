@@ -14,7 +14,7 @@ interface BaseProps {
   className?: string;
 }
 
-interface IAvatarProps extends BaseProps {
+export interface IAvatarProps extends BaseProps {
   src?: string | null;
   name: string;
 }

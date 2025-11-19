@@ -4,8 +4,8 @@ import instance from '@/utils/axios-instance';
 import { setToken } from '@/utils/storages';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState<string>('fikriii@gmail.com');
-  const [password, setPassword] = useState<string>('Fikriii!123');
+  const [email, setEmail] = useState<string>('fikrialfjri22@gmail.com');
+  const [password, setPassword] = useState<string>('Fikri123!');
 
   const handleSubmit = async () => {
     try {
