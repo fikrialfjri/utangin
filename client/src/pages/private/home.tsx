@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import type { ISummary, ITransaction } from '@/types/commons';
+import type { ISummary, ITransaction } from '@/types/services';
 import dayjs from 'dayjs';
 
 import List from '@/components/shared/list';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NavItem } from '@/types/commons';
 
 import { removeToken } from '@/utils/storages';
@@ -27,3 +28,12 @@ export const joinClassnames = (classes: (string | undefined)[]): string => {
 
 export const isMinusNumber = (value: number): boolean => value < 0;
 export const isZeroNumber = (value: number): boolean => value === 0;
+
+export const getObjectSearch = (search: any) => {
+  const params = [];
+  for (const entry of search.entries()) {
+    params.push(entry);
+  }
+
+  return params.reduce((curr, acc) => ({ ...curr, [acc[0]]: acc[1] }), {});
+};

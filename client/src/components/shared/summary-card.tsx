@@ -1,4 +1,5 @@
-import type { ISummary, ReactNodeMap, StringMap } from '@/types/commons';
+import type { ReactNodeMap, StringMap } from '@/types/commons';
+import type { ISummary } from '@/types/services';
 
 import { isMinusNumber, isZeroNumber, joinClassnames } from '@/utils/commons';
 
