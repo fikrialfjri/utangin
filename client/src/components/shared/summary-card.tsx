@@ -70,20 +70,20 @@ const SummaryCard = ({
           className={joinClassnames([
             'typo-headline-md font-bold!',
             withColorValue
-              ? isMinusNumber(data.nominal)
+              ? isMinusNumber(data?.nominal ?? 0)
                 ? 'text-danger'
-                : isZeroNumber(data.nominal)
+                : isZeroNumber(data?.nominal ?? 0)
                   ? ''
                   : 'text-success'
               : '',
           ])}
         >
-          {isMinusNumber(data.nominal) ? '-' : ''}Rp
-          {Math.abs(data.nominal)?.toLocaleString()}
+          {isMinusNumber(data?.nominal ?? 0) ? '-' : ''}Rp
+          {Math.abs(data?.nominal ?? 0)?.toLocaleString()}
         </h3>
       </div>
       {variant === 'debt' || variant === 'receivable'
-        ? data.recent_contacts && (
+        ? data?.recent_contacts && (
             <div>
               <AvatarGroup data={data.recent_contacts} />
             </div>
