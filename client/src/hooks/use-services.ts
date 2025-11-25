@@ -7,12 +7,17 @@ import { type IMetaResponse } from '@/types/commons';
 import instance from '@/utils/axios-instance';
 import { getObjectSearch } from '@/utils/commons';
 
-interface IOptions {
+interface IActionOptions {
+  onSuccess?: (data?: any) => void;
+  onError?: (error: any) => void;
+}
+
+interface IGetOptions extends IActionOptions {
   shouldFetch?: boolean;
   pagination?: boolean;
   saveQuery?: boolean;
   isShowNotification?: boolean;
-  all?: boolean;
+  initialData?: any;
 }
 
 const defaultOptions = {
@@ -22,66 +27,36 @@ const defaultOptions = {
   isShowNotification: false,
 };
 
-export const useGet = (
-  url: string,
-  query: any = {},
-  options?: IOptions,
-  actionAfterServices?: () => void,
-) => {
-  const [data, setData] = useState<any>(null);
+export const useGet = (url: string, query: any = {}, options?: IGetOptions) => {
+  const [data, setData] = useState<any | null>(options?.initialData ?? null);
   const [meta, setMeta] = useState<IMetaResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
   const [search, setSearch] = useSearchParams();
-
   const objectSearch = getObjectSearch(search);
 
   const currOptions = useMemo(() => {
-    if (options?.all) {
-      return {
-        ...defaultOptions,
-        pagination: true,
-        isShowNotification: true,
-      };
-    }
-
-    if (options?.all === false) {
-      return {
-        ...defaultOptions,
-        shouldFetch: false,
-        saveQuery: false,
-      };
-    }
-
-    return {
-      ...defaultOptions,
-      ...options,
-    };
+    return { ...defaultOptions, ...options };
   }, [options]);
 
   useEffect(() => {
-    if (currOptions?.shouldFetch) {
+    if (currOptions.shouldFetch) {
       const payload = { ...objectSearch, ...query };
 
-      if (!currOptions?.pagination) {
-        _fetchData(payload);
+      const finalParams = currOptions.pagination
+        ? { page: 1, limit: 10, ...payload }
+        : payload;
 
-        if (currOptions?.saveQuery)
-          return setSearch(payload, { replace: true });
-        return;
+      _fetchData(finalParams);
+
+      if (currOptions.saveQuery) {
+        setSearch(finalParams, { replace: true });
       }
-
-      _fetchData({ page: 1, limit: 10, ...payload });
-
-      if (currOptions?.saveQuery)
-        return setSearch({ page: 1, limit: 10, ...payload }, { replace: true });
     }
-  }, [
-    currOptions?.shouldFetch,
-    currOptions?.pagination,
-    currOptions?.saveQuery,
-  ]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currOptions.shouldFetch, currOptions.pagination]);
 
   const _fetchData = async (params: any, customUrl?: string) => {
     try {
@@ -89,13 +64,14 @@ export const useGet = (
       const response = await instance.get(customUrl ?? url, {
         params,
       });
-
-      setData(response.data.data);
-      setMeta(response.data.meta);
-      if (actionAfterServices) actionAfterServices();
+      const currResponse = response.data;
+      setData(currResponse.data);
+      setMeta(currResponse.meta);
+      if (currOptions?.onSuccess) currOptions.onSuccess(currResponse.data);
     } catch (err: any) {
       setData(null);
       setError(err.message);
+      if (currOptions?.onError) currOptions.onError(err);
     } finally {
       setLoading(false);
     }
@@ -107,14 +83,14 @@ export const useGet = (
     loading,
     error,
     objectSearch,
-    refetch: (params: any = null, customUrl: string) =>
+    refetch: (params: any = null, customUrl?: string) =>
       _fetchData(params || { ...objectSearch, ...query }, customUrl),
     setQueryParams: (object: any) =>
       currOptions?.saveQuery && setSearch(object, { replace: true }),
   };
 };
 
-export const usePost = (url: string, actionAfterServices?: () => void) => {
+export const usePost = (url: string, options?: IActionOptions) => {
   const [responseData, setResponseData] = useState(null);
   const [loadingPost, setLoadingPost] = useState(false);
 
@@ -132,11 +108,11 @@ export const usePost = (url: string, actionAfterServices?: () => void) => {
         headers,
       });
       setResponseData(res.data.data);
-      if (actionAfterServices) actionAfterServices();
+      if (options?.onSuccess) options.onSuccess();
     } catch (err: any) {
       setLoadingPost(false);
       console.error(err.message);
-      if (actionAfterServices) actionAfterServices();
+      if (options?.onError) options.onError(err);
     } finally {
       setLoadingPost(false);
     }
@@ -154,7 +130,7 @@ export const usePost = (url: string, actionAfterServices?: () => void) => {
   };
 };
 
-export const usePut = (url: string, actionAfterServices?: () => void) => {
+export const usePut = (url: string, options?: IActionOptions) => {
   const [responseData, setResponseData] = useState(null);
   const [loadingPut, setLoadingPut] = useState(false);
 
@@ -168,11 +144,11 @@ export const usePut = (url: string, actionAfterServices?: () => void) => {
         params && { params },
       );
       setResponseData(res?.data);
-      if (actionAfterServices) actionAfterServices();
+      if (options?.onSuccess) options.onSuccess();
     } catch (err: any) {
       setLoadingPut(false);
       console.error(err.message);
-      if (actionAfterServices) actionAfterServices();
+      if (options?.onError) options.onError(err);
     } finally {
       setLoadingPut(false);
     }
@@ -186,7 +162,7 @@ export const usePut = (url: string, actionAfterServices?: () => void) => {
   };
 };
 
-export const usePatch = (url: string, actionAfterServices?: () => void) => {
+export const usePatch = (url: string, options?: IActionOptions) => {
   const [responseData, setResponseData] = useState(null);
   const [loadingPatch, setLoadingPatch] = useState(false);
 
@@ -204,11 +180,11 @@ export const usePatch = (url: string, actionAfterServices?: () => void) => {
         params && { params },
       );
       setResponseData(res?.data);
-      if (actionAfterServices) actionAfterServices();
+      if (options?.onSuccess) options.onSuccess();
     } catch (err: any) {
       setLoadingPatch(false);
       console.error(err.message);
-      if (actionAfterServices) actionAfterServices();
+      if (options?.onError) options.onError(err);
     } finally {
       setLoadingPatch(false);
     }
@@ -222,7 +198,7 @@ export const usePatch = (url: string, actionAfterServices?: () => void) => {
   };
 };
 
-export const useDelete = (url: string, actionAfterServices?: () => void) => {
+export const useDelete = (url: string, options?: IActionOptions) => {
   const [loadingDelete, setLoadingDelete] = useState(false);
 
   const _handleDelete = async (customUrl?: string, params?: any) => {
@@ -230,11 +206,11 @@ export const useDelete = (url: string, actionAfterServices?: () => void) => {
 
     try {
       await instance.delete(customUrl ?? url, params && { params });
-      if (actionAfterServices) actionAfterServices();
+      if (options?.onSuccess) options.onSuccess();
     } catch (err: any) {
       setLoadingDelete(false);
       console.error(err.message);
-      if (actionAfterServices) actionAfterServices();
+      if (options?.onError) options.onError(err);
     } finally {
       setLoadingDelete(false);
     }
