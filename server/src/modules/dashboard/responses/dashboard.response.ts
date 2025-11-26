@@ -1,8 +1,8 @@
-import { ContactResponse } from 'src/modules/contact/responses/contact.response';
+import { GlobalContactResponse } from 'src/modules/contact/responses/contact.response';
 
 class SummaryResponse {
   nominal: number;
-  recent_contacts?: ContactResponse[];
+  recent_contacts?: GlobalContactResponse[];
 }
 
 export class DashboardSummaryResponse {

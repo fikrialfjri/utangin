@@ -16,7 +16,10 @@ import {
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { BaseResponse } from 'src/common/interfaces/base-response.interface';
-import { ContactResponse } from './responses/contact.response';
+import {
+  ContactResponse,
+  GlobalContactResponse,
+} from './responses/contact.response';
 import { JwtAuthGuard } from 'src/common/auth/guards/logged-in.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -58,7 +61,7 @@ export class ContactController {
     @Req() req: Request & { user: { username: string } },
     @Body() reqBody: CreateContactDto,
     @UploadedFile() avatar: Express.Multer.File | undefined,
-  ): Promise<BaseResponse<ContactResponse>> {
+  ): Promise<BaseResponse<GlobalContactResponse>> {
     return {
       message: 'Data contact berhasil dibuat',
       data: await this.contactService.create(
@@ -83,7 +86,7 @@ export class ContactController {
   async findOne(
     @Req() req: Request & { user: { username: string } },
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<BaseResponse<ContactResponse>> {
+  ): Promise<BaseResponse<GlobalContactResponse>> {
     return {
       message: 'Data detail contact berhasil dimuat',
       data: await this.contactService.findOne(req.user.username, id),
@@ -121,7 +124,7 @@ export class ContactController {
     @Param('id', ParseIntPipe) id: number,
     @Body() reqBody: UpdateContactDto,
     @UploadedFile() avatar: Express.Multer.File | undefined,
-  ): Promise<BaseResponse<ContactResponse>> {
+  ): Promise<BaseResponse<GlobalContactResponse>> {
     return {
       message: 'Data contact berhasil diperbarui',
       data: await this.contactService.update(
@@ -137,7 +140,7 @@ export class ContactController {
   async remove(
     @Req() req: Request & { user: { username: string } },
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<BaseResponse<ContactResponse>> {
+  ): Promise<BaseResponse<GlobalContactResponse>> {
     return {
       message: 'Data contact berhasil dihapus',
       data: await this.contactService.remove(req.user.username, id),
