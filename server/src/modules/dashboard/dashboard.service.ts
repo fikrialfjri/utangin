@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { DashboardSummaryResponse } from './responses/dashboard.response';
-import { ContactResponse } from '../contact/responses/contact.response';
+import { GlobalContactResponse } from '../contact/responses/contact.response';
+import { TransactionType } from '@prisma/client';
 
 @Injectable()
 export class DashboardService {
@@ -16,19 +17,19 @@ export class DashboardService {
     const [debtAgg, receivableAgg, debtTrx, receivableTrx] = await Promise.all([
       this.prismaService.transaction.aggregate({
         _sum: { amount: true },
-        where: { username, type: 'DEBT' },
+        where: { username, type: TransactionType.DEBT },
       }),
       this.prismaService.transaction.aggregate({
         _sum: { amount: true },
-        where: { username, type: 'RECEIVABLE' },
+        where: { username, type: TransactionType.RECEIVABLE },
       }),
       this.prismaService.transaction.findMany({
-        where: { username, type: 'DEBT' },
+        where: { username, type: TransactionType.DEBT },
         orderBy: { date: 'desc' },
         select: { contact: { select: { id: true, name: true, avatar: true } } },
       }),
       this.prismaService.transaction.findMany({
-        where: { username, type: 'RECEIVABLE' },
+        where: { username, type: TransactionType.RECEIVABLE },
         orderBy: { date: 'desc' },
         select: { contact: { select: { id: true, name: true, avatar: true } } },
       }),
@@ -36,11 +37,11 @@ export class DashboardService {
 
     const extractRecentUniqueContacts = (
       transactions: {
-        contact: ContactResponse;
+        contact: GlobalContactResponse;
       }[],
-    ): ContactResponse[] => {
+    ): GlobalContactResponse[] => {
       const seen = new Set<number>();
-      const contacts: ContactResponse[] = [];
+      const contacts: GlobalContactResponse[] = [];
       for (const trx of transactions) {
         if (trx.contact && !seen.has(trx.contact.id)) {
           seen.add(trx.contact.id);
