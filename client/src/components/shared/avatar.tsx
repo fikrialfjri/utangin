@@ -1,4 +1,5 @@
-import type { IContact, StringMap } from '@/types/commons';
+import type { StringMap } from '@/types/commons';
+import type { IContact } from '@/types/services';
 
 import { joinClassnames } from '@/utils/commons';
 

@@ -1,39 +1,68 @@
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  forwardRef,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { ContactResponse } from './responses/contact.response';
-import { Prisma } from '@prisma/client';
+import {
+  ContactResponse,
+  GlobalContactResponse,
+} from './responses/contact.response';
+import { Prisma, TransactionType } from '@prisma/client';
 import { UpdateContactDto } from './dto/update-contact.dto';
-import { TransactionService } from '../transaction/transaction.service';
-import { AuthService } from '../auth/auth.service';
 
 const contactInclude = {
   user: true,
-  transactions: true,
+  transactions: { orderBy: { date: 'desc' } },
 } satisfies Prisma.ContactInclude;
 
 type Contact = Prisma.ContactGetPayload<{ include: typeof contactInclude }>;
 
 @Injectable()
 export class ContactService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    @Inject(forwardRef(() => TransactionService))
-    private readonly transactionService: TransactionService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  toContactResponse(contact: Contact): ContactResponse {
-    return {
+  toContactResponse(contact: Contact): GlobalContactResponse;
+  toContactResponse(contact: Contact, variant: 'basic'): GlobalContactResponse;
+  toContactResponse(contact: Contact, variant: 'complete'): ContactResponse;
+  toContactResponse(
+    contact: Contact,
+    variant: 'basic' | 'complete' = 'basic',
+  ): GlobalContactResponse | ContactResponse {
+    const basicResponse = {
       id: contact.id,
       name: contact.name,
       avatar: contact.avatar,
     };
+
+    if (variant === 'basic') return basicResponse;
+
+    const { total_debt, total_receivable } = contact.transactions.reduce(
+      (acc, tx) => {
+        if (tx.type === TransactionType.DEBT) acc.total_debt += tx.amount;
+        if (tx.type === TransactionType.RECEIVABLE)
+          acc.total_receivable += tx.amount;
+        return acc;
+      },
+      { total_debt: 0, total_receivable: 0 },
+    );
+
+    const net_total = total_receivable - total_debt;
+    const status =
+      net_total === 0
+        ? undefined
+        : net_total > 0
+          ? TransactionType.RECEIVABLE
+          : TransactionType.DEBT;
+    const last_transaction = contact.transactions[0]?.date;
+
+    const completeResponse = {
+      ...basicResponse,
+      total_debt,
+      total_receivable,
+      net_total: Math.abs(net_total),
+      status,
+      last_transaction,
+    };
+
+    return completeResponse;
   }
 
   async checkContactMustExists(username: string, id: number): Promise<Contact> {
@@ -53,7 +82,7 @@ export class ContactService {
     username: string,
     reqBody: CreateContactDto,
     avatarFilename?: string | null,
-  ): Promise<ContactResponse> {
+  ): Promise<GlobalContactResponse> {
     const newContact = await this.prismaService.contact.create({
       data: {
         name: reqBody.name,
@@ -72,10 +101,12 @@ export class ContactService {
       include: contactInclude,
     });
 
-    return contacts.map((contact) => this.toContactResponse(contact));
+    return contacts.map((contact) =>
+      this.toContactResponse(contact, 'complete'),
+    );
   }
 
-  async findOne(username: string, id: number): Promise<ContactResponse> {
+  async findOne(username: string, id: number): Promise<GlobalContactResponse> {
     const contact = await this.checkContactMustExists(username, id);
 
     return this.toContactResponse(contact);
@@ -86,7 +117,7 @@ export class ContactService {
     id: number,
     reqBody: UpdateContactDto,
     avatarFilename?: string | null,
-  ): Promise<ContactResponse> {
+  ): Promise<GlobalContactResponse> {
     await this.checkContactMustExists(username, id);
 
     const updatedContact = await this.prismaService.contact.update({
@@ -102,7 +133,7 @@ export class ContactService {
     return this.toContactResponse(updatedContact);
   }
 
-  async remove(username: string, id: number): Promise<ContactResponse> {
+  async remove(username: string, id: number): Promise<GlobalContactResponse> {
     await this.checkContactMustExists(username, id);
 
     const contact = await this.prismaService.contact.delete({

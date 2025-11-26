@@ -1,5 +1,5 @@
 import { TransactionStatus, TransactionType } from '@prisma/client';
-import { ContactResponse } from 'src/modules/contact/responses/contact.response';
+import { GlobalContactResponse } from 'src/modules/contact/responses/contact.response';
 
 export class TransactionResponse {
   id: number;
@@ -9,7 +9,7 @@ export class TransactionResponse {
   date: Date;
   description?: string;
   due_date?: Date;
-  contact: ContactResponse;
+  contact: GlobalContactResponse;
 }
 
 export class GroupedTransactionResponse {

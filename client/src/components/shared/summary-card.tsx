@@ -1,4 +1,11 @@
-import type { ISummary, ReactNodeMap, StringMap } from '@/types/commons';
+import type {
+  ReactNodeMap,
+  StringMap,
+  SummaryCardVariant,
+} from '@/types/commons';
+import type { ISummary } from '@/types/services';
+
+import { TRANSACTION_TYPES } from '@/libs/constants';
 
 import { isMinusNumber, isZeroNumber, joinClassnames } from '@/utils/commons';
 
@@ -11,7 +18,7 @@ import ReceivableIcon from '@/assets/icons/receivable.svg?react';
 import { AvatarGroup } from './avatar';
 
 interface IProps {
-  variant: 'potential' | 'current' | 'receivable-debt' | 'debt' | 'receivable';
+  variant: SummaryCardVariant;
   data: ISummary;
   withShadow?: boolean;
   withColorValue?: boolean;
@@ -26,27 +33,27 @@ const SummaryCard = ({
   className,
 }: IProps) => {
   const wrapperClassnames: StringMap = {
-    potential: 'bg-primary text-shades-white',
-    current: 'bg-primary-50 text-neutral-2',
-    'receivable-debt': 'bg-primary-50 text-neutral-2',
-    debt: 'bg-danger text-shades-white',
-    receivable: 'bg-warning text-shades-white',
+    POTENTIAL: 'bg-primary text-shades-white',
+    CURRENT: 'bg-primary-50 text-neutral-2',
+    RECEIVABLE_DEBT: 'bg-primary-50 text-neutral-2',
+    DEBT: 'bg-danger text-shades-white',
+    RECEIVABLE: 'bg-warning text-shades-white',
   };
 
   const renderedIcons: ReactNodeMap = {
-    potential: <PotentialSaldoIcon />,
-    current: <CurrentSaldoIcon />,
-    'receivable-debt': <ReceivableDebtIcon />,
-    debt: <DebtIcon />,
-    receivable: <ReceivableIcon />,
+    POTENTIAL: <PotentialSaldoIcon />,
+    CURRENT: <CurrentSaldoIcon />,
+    RECEIVABLE_DEBT: <ReceivableDebtIcon />,
+    DEBT: <DebtIcon />,
+    RECEIVABLE: <ReceivableIcon />,
   };
 
   const renderedLabel: StringMap = {
-    potential: 'Saldo Potential',
-    current: 'Saldo Saat Ini',
-    'receivable-debt': 'Piutang - Hutang',
-    debt: 'Total Hutang',
-    receivable: 'Total Piutang',
+    POTENTIAL: 'Saldo Potential',
+    CURRENT: 'Saldo Saat Ini',
+    RECEIVABLE_DEBT: 'Piutang - Hutang',
+    DEBT: 'Total Hutang',
+    RECEIVABLE: 'Total Piutang',
   };
 
   return (
@@ -69,20 +76,21 @@ const SummaryCard = ({
           className={joinClassnames([
             'typo-headline-md font-bold!',
             withColorValue
-              ? isMinusNumber(data.nominal)
+              ? isMinusNumber(data?.nominal ?? 0)
                 ? 'text-danger'
-                : isZeroNumber(data.nominal)
+                : isZeroNumber(data?.nominal ?? 0)
                   ? ''
                   : 'text-success'
               : '',
           ])}
         >
-          {isMinusNumber(data.nominal) ? '-' : ''}Rp
-          {Math.abs(data.nominal)?.toLocaleString()}
+          {isMinusNumber(data?.nominal ?? 0) ? '-' : ''}Rp
+          {Math.abs(data?.nominal ?? 0)?.toLocaleString()}
         </h3>
       </div>
-      {variant === 'debt' || variant === 'receivable'
-        ? data.recent_contacts && (
+      {variant === TRANSACTION_TYPES.DEBT ||
+      variant === TRANSACTION_TYPES.RECEIVABLE
+        ? data?.recent_contacts && (
             <div>
               <AvatarGroup data={data.recent_contacts} />
             </div>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { FC, ReactNode } from 'react';
 
-import type { StringMap } from '@/types/commons';
+import type { StringMap, TransactionType } from '@/types/commons';
 
 import { joinClassnames } from '@/utils/commons';
 
@@ -15,7 +15,7 @@ interface IListProps {
   renderItem: RenderItemFn;
 }
 interface IListItemProps {
-  variant?: 'debt' | 'receivable';
+  variant?: TransactionType;
   children: ReactNode;
 }
 interface IListItemMetaProps {
@@ -33,9 +33,9 @@ type ListComponent = FC<IListProps> & {
 const List: ListComponent = ({ data, renderItem }) => {
   return (
     <ul className="flex flex-col gap-3">
-      {data.map((item: any, idx: number) => (
+      {data?.map((item: any, idx: number) => (
         <li
-          key={idx}
+          key={item.id ?? idx}
           className="p-3 border border-neutral-5 bg-shades-white rounded-[18px]"
         >
           {renderItem(item, idx)}
@@ -47,14 +47,14 @@ const List: ListComponent = ({ data, renderItem }) => {
 
 const ListItem = ({ variant, children }: IListItemProps) => {
   const wrapperClassnames: StringMap = {
-    debt: 'text-danger',
-    receivable: 'text-warning',
+    DEBT: 'text-danger!',
+    RECEIVABLE: 'text-warning!',
   };
 
   return (
     <div
       className={joinClassnames([
-        'typo-body-md font-bold! flex items-center justify-between gap-3',
+        'typo-body-md font-bold! flex items-center justify-between gap-3 text-neutral-2',
         wrapperClassnames[variant!],
       ])}
     >
