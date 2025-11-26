@@ -17,6 +17,11 @@ export interface IContact {
   id: number;
   avatar?: string | null;
   name: string;
+  total_debt?: number;
+  total_receivable?: number;
+  net_total?: number;
+  status?: TransactionType;
+  last_transaction?: Date;
 }
 
 export interface ITransaction {
@@ -24,7 +29,7 @@ export interface ITransaction {
   type: TransactionType;
   amount: number;
   status: TransactionStatus;
-  date: string;
+  date: Date;
   contact: IContact;
 }
 

@@ -6,6 +6,10 @@ import SummaryCard from '@/components/shared/summary-card';
 
 import { useGet } from '@/hooks/use-services';
 
+import { SUMMARY_CARD_VARIANTS } from '@/libs/constants';
+
+import { formatCurrency } from '@/utils/commons';
+
 interface IGetSummary {
   data: IDashboardSummary;
 }
@@ -24,19 +28,28 @@ const HomePage = () => {
     <div className="flex flex-col gap-3">
       <section className="grid grid-cols-2 gap-3">
         <SummaryCard
-          variant="potential"
+          variant={SUMMARY_CARD_VARIANTS.POTENTIAL}
           data={summaryData?.potential}
           className="col-span-2"
           withShadow
         />
-        <SummaryCard variant="current" data={summaryData?.current} />
         <SummaryCard
-          variant="receivable-debt"
+          variant={SUMMARY_CARD_VARIANTS.CURRENT}
+          data={summaryData?.current}
+        />
+        <SummaryCard
+          variant={SUMMARY_CARD_VARIANTS.RECEIVABLE_DEBT}
           data={summaryData?.receivable_debt}
           withColorValue
         />
-        <SummaryCard variant="debt" data={summaryData?.debt} />
-        <SummaryCard variant="receivable" data={summaryData?.receivable} />
+        <SummaryCard
+          variant={SUMMARY_CARD_VARIANTS.DEBT}
+          data={summaryData?.debt}
+        />
+        <SummaryCard
+          variant={SUMMARY_CARD_VARIANTS.RECEIVABLE}
+          data={summaryData?.receivable}
+        />
       </section>
       <section className="flex flex-col gap-3">
         <h2 className="typo-headline-md font-bold! text-neutral-2">
@@ -51,7 +64,7 @@ const HomePage = () => {
               <List
                 data={dt.transactions}
                 renderItem={(item) => (
-                  <List.Item key={item.id} variant={item.type.toLowerCase()}>
+                  <List.Item key={item.id} variant={item.type}>
                     <List.Item.Meta
                       avatar={{
                         src: item.contact.avatar,
@@ -62,7 +75,7 @@ const HomePage = () => {
                         'DD MMM YYYY',
                       )}
                     />
-                    Rp{item.amount.toLocaleString()}
+                    {formatCurrency(item.amount)}
                   </List.Item>
                 )}
               />

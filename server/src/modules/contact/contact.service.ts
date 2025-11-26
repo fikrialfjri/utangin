@@ -46,7 +46,7 @@ export class ContactService {
 
     const net_total = total_receivable - total_debt;
     const status =
-      net_total !== 0
+      net_total === 0
         ? undefined
         : net_total > 0
           ? TransactionType.RECEIVABLE

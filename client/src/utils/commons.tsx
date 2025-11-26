@@ -37,3 +37,13 @@ export const getObjectSearch = (search: any) => {
 
   return params.reduce((curr, acc) => ({ ...curr, [acc[0]]: acc[1] }), {});
 };
+
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  })
+    .format(amount)
+    .replace(/\s/g, '');
+};
