@@ -10,7 +10,7 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 
 const contactInclude = {
   user: true,
-  transactions: true,
+  transactions: { orderBy: { date: 'desc' } },
 } satisfies Prisma.ContactInclude;
 
 type Contact = Prisma.ContactGetPayload<{ include: typeof contactInclude }>;
@@ -51,6 +51,7 @@ export class ContactService {
         : net_total > 0
           ? TransactionType.RECEIVABLE
           : TransactionType.DEBT;
+    const last_transaction = contact.transactions[0]?.date;
 
     const completeResponse = {
       ...basicResponse,
@@ -58,6 +59,7 @@ export class ContactService {
       total_receivable,
       net_total: Math.abs(net_total),
       status,
+      last_transaction,
     };
 
     return completeResponse;

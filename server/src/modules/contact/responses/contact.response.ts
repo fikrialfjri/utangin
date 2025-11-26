@@ -11,4 +11,5 @@ export class ContactResponse extends GlobalContactResponse {
   total_receivable: number;
   net_total: number;
   status?: TransactionType;
+  last_transaction: Date;
 }
