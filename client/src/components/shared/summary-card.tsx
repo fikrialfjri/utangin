@@ -25,6 +25,7 @@ interface IProps {
   className?: string;
   centered?: boolean;
   titleClassName?: string;
+  withoutRecentContacts?: boolean;
 }
 
 const SummaryCard = ({
@@ -35,6 +36,7 @@ const SummaryCard = ({
   className,
   centered,
   titleClassName,
+  withoutRecentContacts,
 }: IProps) => {
   const wrapperClassnames: StringMap = {
     POTENTIAL: 'bg-primary text-shades-white',
@@ -98,8 +100,9 @@ const SummaryCard = ({
           {Math.abs(data?.nominal ?? 0)?.toLocaleString()}
         </h3>
       </div>
-      {variant === TRANSACTION_TYPES.DEBT ||
-      variant === TRANSACTION_TYPES.RECEIVABLE
+      {!withoutRecentContacts &&
+      (variant === TRANSACTION_TYPES.DEBT ||
+        variant === TRANSACTION_TYPES.RECEIVABLE)
         ? data?.recent_contacts && (
             <div>
               <AvatarGroup data={data.recent_contacts} />
