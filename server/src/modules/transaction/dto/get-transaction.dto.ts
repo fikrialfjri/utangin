@@ -1,3 +1,4 @@
+import { TransactionType } from '@prisma/client';
 import z, { ZodObject } from 'zod';
 
 const getTransactionSchema = z.object({
@@ -23,6 +24,7 @@ const getTransactionSchema = z.object({
     .refine((val) => val >= 1, { message: 'Limit minimal 1' })
     .optional(),
   group_by: z.enum(['month']).optional(),
+  type: z.enum([TransactionType.DEBT, TransactionType.RECEIVABLE]).optional(),
 });
 
 export class GetTransactionDto {
@@ -33,5 +35,6 @@ export class GetTransactionDto {
     public readonly page?: number,
     public readonly limit?: number,
     public readonly group_by?: 'month',
+    public readonly type?: TransactionType,
   ) {}
 }
