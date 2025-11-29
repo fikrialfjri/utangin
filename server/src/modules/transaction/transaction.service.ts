@@ -117,13 +117,13 @@ export class TransactionService {
     data: TransactionResponse[] | GroupedTransactionResponse[];
     total: number;
   }> {
-    const { page, limit: take, group_by } = reqParams;
+    const { page, limit: take, group_by, type } = reqParams;
 
     const skip: number = (page! - 1) * take!;
 
     const [transactions, count] = await Promise.all([
       this.prismaService.transaction.findMany({
-        where: { username },
+        where: { username, type },
         include: transactionInclude,
         orderBy: { date: 'desc' },
         ...(take ? { skip, take } : {}),
