@@ -23,6 +23,8 @@ interface IProps {
   withShadow?: boolean;
   withColorValue?: boolean;
   className?: string;
+  centered?: boolean;
+  titleClassName?: string;
 }
 
 const SummaryCard = ({
@@ -31,6 +33,8 @@ const SummaryCard = ({
   withShadow,
   withColorValue,
   className,
+  centered,
+  titleClassName,
 }: IProps) => {
   const wrapperClassnames: StringMap = {
     POTENTIAL: 'bg-primary text-shades-white',
@@ -65,7 +69,12 @@ const SummaryCard = ({
         className,
       ])}
     >
-      <div>
+      <div
+        className={joinClassnames([
+          'flex flex-col',
+          centered ? 'justify-center items-center' : 'items-start',
+        ])}
+      >
         <div className="flex items-center gap-1">
           <div className="*:w-3.5 *:h-3.5">{renderedIcons[variant]}</div>
           <label className="typo-body-md font-normal!">
@@ -82,6 +91,7 @@ const SummaryCard = ({
                   ? ''
                   : 'text-success'
               : '',
+            titleClassName,
           ])}
         >
           {isMinusNumber(data?.nominal ?? 0) ? '-' : ''}Rp
