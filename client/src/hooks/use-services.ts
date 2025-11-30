@@ -93,6 +93,7 @@ export const useGet = (url: string, query: any = {}, options?: IGetOptions) => {
 export const usePost = (url: string, options?: IActionOptions) => {
   const [responseData, setResponseData] = useState(null);
   const [loadingPost, setLoadingPost] = useState(false);
+  const [errorData, setErrorData] = useState(null);
 
   const _handlePost = async (
     payload: any,
@@ -108,10 +109,11 @@ export const usePost = (url: string, options?: IActionOptions) => {
         headers,
       });
       setResponseData(res.data.data);
-      if (options?.onSuccess) options.onSuccess();
+      if (options?.onSuccess) options.onSuccess(res.data);
     } catch (err: any) {
       setLoadingPost(false);
       console.error(err.message);
+      if (err.errors) setErrorData(err.errors);
       if (options?.onError) options.onError(err);
     } finally {
       setLoadingPost(false);
@@ -127,6 +129,7 @@ export const usePost = (url: string, options?: IActionOptions) => {
     ) => _handlePost(payload, customUrl, params, headers),
     loadingPost,
     responseData,
+    errorData,
   };
 };
 

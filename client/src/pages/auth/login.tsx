@@ -1,55 +1,58 @@
-import { useState } from 'react';
+import Button from '@/components/shared/button';
+import Input from '@/components/shared/input';
 
-import instance from '@/utils/axios-instance';
+import useForm from '@/hooks/use-form';
+import { usePost } from '@/hooks/use-services';
+
 import { setToken } from '@/utils/storages';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState<string>('fikrialfjri22@gmail.com');
-  const [password, setPassword] = useState<string>('Fikri123!');
-
-  const handleSubmit = async () => {
-    try {
-      const res = await instance.post('/auth/login', { email, password });
-
-      const token = res.data?.access_token;
+  const { state, handleFormChange, resetForm } = useForm({
+    email: '',
+    password: '',
+  });
+  const { handlePost } = usePost('/auth/login', {
+    onSuccess: (res) => {
+      const token = res.access_token;
 
       if (token) {
         setToken(token);
         globalThis.location.replace('/');
       }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    },
+  });
 
   return (
     <form
       className="flex flex-col gap-5"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        handleSubmit();
+
+        await handlePost(state);
+        resetForm();
       }}
     >
-      <input
+      <Input
+        id="email"
+        name="email"
         type="email"
-        placeholder="Email"
-        className="border border-neutral-4 rounded-lg p-2"
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
+        label="Email"
+        placeholder="Masukkan email disini"
+        onChange={handleFormChange}
       />
-      <input
+      <Input
+        id="password"
+        name="password"
         type="password"
-        placeholder="Password"
-        className="border border-neutral-4 rounded-lg p-2"
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
+        label="Password"
+        placeholder="Masukkan password disini"
+        onChange={handleFormChange}
       />
-      <button
-        type="submit"
-        className="bg-primary text-white w-full p-2 rounded-lg cursor-pointer"
-      >
-        Masuk
-      </button>
+      <footer className="mt-5 flex flex-col items-center">
+        <Button type="submit" block>
+          Masuk
+        </Button>
+      </footer>
     </form>
   );
 };
