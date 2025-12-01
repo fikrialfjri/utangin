@@ -5,12 +5,21 @@ import useForm from '@/hooks/use-form';
 import { usePost } from '@/hooks/use-services';
 
 import { setToken } from '@/utils/storages';
+import { valid } from '@/utils/validators';
 
 const LoginPage = () => {
-  const { state, handleFormChange, resetForm } = useForm({
-    email: '',
-    password: '',
-  });
+  const { state, errors, handleFormChange, resetForm, isValid } = useForm(
+    {
+      email: '',
+      password: '',
+    },
+    {
+      validators: {
+        email: [valid.required('Email wajib diisi')],
+        password: [valid.required('Password wajib diisi')],
+      },
+    },
+  );
   const { handlePost } = usePost('/auth/login', {
     onSuccess: (res) => {
       const token = res.access_token;
@@ -18,6 +27,7 @@ const LoginPage = () => {
       if (token) {
         setToken(token);
         globalThis.location.replace('/');
+        resetForm();
       }
     },
   });
@@ -28,8 +38,9 @@ const LoginPage = () => {
       onSubmit={async (e) => {
         e.preventDefault();
 
+        if (!isValid) return;
+
         await handlePost(state);
-        resetForm();
       }}
     >
       <Input
@@ -38,7 +49,9 @@ const LoginPage = () => {
         type="email"
         label="Email"
         placeholder="Masukkan email disini"
+        value={state.email}
         onChange={handleFormChange}
+        error={errors.email}
       />
       <Input
         id="password"
@@ -46,10 +59,12 @@ const LoginPage = () => {
         type="password"
         label="Password"
         placeholder="Masukkan password disini"
+        value={state.password}
         onChange={handleFormChange}
+        error={errors.password}
       />
       <footer className="mt-5 flex flex-col items-center">
-        <Button type="submit" block>
+        <Button type="submit" block disabled={!isValid}>
           Masuk
         </Button>
       </footer>

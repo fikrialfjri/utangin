@@ -47,3 +47,11 @@ export const formatCurrency = (amount: number): string => {
     .format(amount)
     .replace(/\s/g, '');
 };
+
+export const hasTruthyValue = (obj: Record<string, any>): boolean =>
+  Object.values(obj).some((msg) => !!msg);
+
+export const isAllFilled = (obj: Record<string, any>): boolean =>
+  Object.values(obj).every(
+    (v) => v !== null && v !== undefined && String(v).trim() !== '',
+  );
