@@ -20,7 +20,8 @@ const loginAuthSchema = z.object({
     ),
   password: z
     .string()
-    .min(8, 'Password harus memiliki minimal 8 karakter')
+    .trim()
+    .min(1, 'Password wajib diisi')
     .max(100, 'Password tidak boleh lebih dari 100 karakter'),
 });
 
