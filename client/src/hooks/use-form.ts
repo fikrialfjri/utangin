@@ -1,25 +1,50 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, type ChangeEvent } from 'react';
 
-const useForm = (initialState: any) => {
-  const [state, setState] = useState<any>(initialState);
+import { hasTruthyValue, isAllFilled } from '@/utils/commons';
+import { runFieldValidators, type FieldValidators } from '@/utils/validators';
+
+const useForm = <T extends Record<string, any>>(
+  initialState: T,
+  options?: {
+    validators?: FieldValidators<T>;
+  },
+) => {
+  const [state, setState] = useState<T>(initialState);
+  const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
 
   const handleFormChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { name, value },
-    } = event;
+    const { name, value } = event.target;
+    const key = name as keyof T;
+    const newValues = { ...state, [key]: value };
 
-    setState((prev: any) => ({
+    setState(newValues);
+
+    const message = runFieldValidators(
+      key,
+      value,
+      newValues,
+      options?.validators,
+    );
+    setErrors((prev) => ({
       ...prev,
-      [name]: value,
+      [key]: message || undefined,
     }));
   };
 
+  const resetForm = () => {
+    setState(initialState);
+    setErrors({});
+  };
+
+  const isValid = isAllFilled(state) && !hasTruthyValue(errors as any);
+
   return {
     state,
+    errors,
     handleFormChange,
-    resetForm: () => setState(initialState),
-    setForm: setState,
+    resetForm,
+    isValid,
   };
 };
 
