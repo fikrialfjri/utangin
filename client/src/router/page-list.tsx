@@ -28,6 +28,10 @@ const pageList = {
       path: 'login',
       component: lazy(() => import('@/pages/auth/login')),
     },
+    {
+      path: 'register',
+      component: lazy(() => import('@/pages/auth/register')),
+    },
   ],
 };
 

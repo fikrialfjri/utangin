@@ -5,21 +5,12 @@ import useForm from '@/hooks/use-form';
 import { usePost } from '@/hooks/use-services';
 
 import { setToken } from '@/utils/storages';
-import { valid } from '@/utils/validators';
 
 const LoginPage = () => {
-  const { state, errors, handleFormChange, resetForm, isValid } = useForm(
-    {
-      email: '',
-      password: '',
-    },
-    {
-      validators: {
-        email: [valid.required('Email wajib diisi')],
-        password: [valid.required('Password wajib diisi')],
-      },
-    },
-  );
+  const { state, errors, handleFormChange, resetForm, isValid } = useForm({
+    email: '',
+    password: '',
+  });
   const { handlePost } = usePost('/auth/login', {
     onSuccess: (res) => {
       const token = res.access_token;
@@ -52,6 +43,7 @@ const LoginPage = () => {
         value={state.email}
         onChange={handleFormChange}
         error={errors.email}
+        required
       />
       <Input
         id="password"
@@ -62,6 +54,7 @@ const LoginPage = () => {
         value={state.password}
         onChange={handleFormChange}
         error={errors.password}
+        required
       />
       <footer className="mt-5 flex flex-col items-center">
         <Button type="submit" block disabled={!isValid}>

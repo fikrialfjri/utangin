@@ -15,3 +15,12 @@ export const SUMMARY_CARD_VARIANTS = {
   RECEIVABLE_DEBT: 'RECEIVABLE_DEBT',
   ...TRANSACTION_TYPES,
 };
+export const PASSWORD_RULES: {
+  regex: RegExp;
+  label: string;
+}[] = [
+  { regex: /[A-Z]/, label: 'Minimal 1 Huruf besar (A-Z)' },
+  { regex: /[a-z]/, label: 'Minimal 1 Huruf kecil (a-z)' },
+  { regex: /[0-9]/, label: 'Minimal 1 Angka (0-9)' },
+  { regex: /[!@#$%^&*]/, label: 'Minimal 1 Simbol (!@#$%^&*)' },
+];
