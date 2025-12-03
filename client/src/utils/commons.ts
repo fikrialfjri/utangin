@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NavItem } from '@/types/commons';
 
+import { PASSWORD_RULES } from '@/libs/constants';
+
 import { removeToken } from '@/utils/storages';
 
 export const logoutUser = () => {
@@ -55,3 +57,10 @@ export const isAllFilled = (obj: Record<string, any>): boolean =>
   Object.values(obj).every(
     (v) => v !== null && v !== undefined && String(v).trim() !== '',
   );
+
+export const sentenceCase = (str: string): string =>
+  str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : '';
+
+export const isAllPasswordRulesFulfilled = (password: string): boolean => {
+  return PASSWORD_RULES.every((rule) => rule.regex.test(password));
+};

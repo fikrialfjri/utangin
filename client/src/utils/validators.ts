@@ -25,10 +25,18 @@ export function runFieldValidators<T extends Record<string, any>>(
 }
 
 export const valid = {
-  required:
-    (msg = 'Field wajib diisi'): ValidatorFn =>
+  min:
+    (label: string, len: number, msg?: string): ValidatorFn =>
     (value) => {
-      if (value == null || String(value).trim() === '') return msg;
+      if (String(value).length < len)
+        return msg || `${label} harus memiliki minimal ${len} karakter`;
+      return null;
+    },
+  max:
+    (label: string, len: number, msg?: string): ValidatorFn =>
+    (value) => {
+      if (String(value).length > len)
+        return msg || `${label} tidak boleh lebih dari ${len} karakter`;
       return null;
     },
 };
