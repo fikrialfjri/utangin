@@ -6,12 +6,13 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   id: string;
   type: 'text' | 'password' | 'email';
   label: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   error?:
     | { status: boolean | undefined; message: string | undefined }
     | string
     | null
     | undefined;
+  required?: true | false;
+  requiredMessage?: string;
 }
 
 const Input = ({
@@ -20,13 +21,16 @@ const Input = ({
   label = '',
   onChange,
   error = null,
+  required = false,
+  requiredMessage,
+  value,
   ...rest
 }: InputProps) => {
   const [isTouched, setIsTouched] = useState<boolean>(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setIsTouched(true);
-    onChange(e);
+    if (onChange) onChange(e);
   };
 
   const handleBlur = () => {
@@ -41,7 +45,17 @@ const Input = ({
         }
       : error;
 
-  const showError = normalizedError.status && isTouched;
+  const showValidatorError = normalizedError.status && isTouched;
+  const showRequiredError =
+    required && isTouched && !value && !showValidatorError;
+
+  const finalMessage = showValidatorError
+    ? normalizedError.message
+    : showRequiredError
+      ? requiredMessage || `${label} wajib diisi`
+      : '';
+
+  const showError = showValidatorError || showRequiredError;
 
   return (
     <div>
@@ -53,10 +67,12 @@ const Input = ({
         ])}
       >
         {label}
+        {required && <span className="text-danger">*</span>}
       </label>
       <input
         id={id}
         type={type}
+        value={value}
         onChange={handleInputChange}
         onBlur={handleBlur}
         className={joinClassnames([
@@ -68,9 +84,7 @@ const Input = ({
         {...rest}
       />
       {showError && (
-        <div className="ml-2 mt-1 typo-body-md text-danger">
-          *{normalizedError.message}
-        </div>
+        <div className="ml-2 mt-1 typo-body-md text-danger">{finalMessage}</div>
       )}
     </div>
   );

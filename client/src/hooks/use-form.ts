@@ -8,6 +8,7 @@ const useForm = <T extends Record<string, any>>(
   initialState: T,
   options?: {
     validators?: FieldValidators<T>;
+    requiredFields?: (keyof T)[];
   },
 ) => {
   const [state, setState] = useState<T>(initialState);
@@ -37,7 +38,20 @@ const useForm = <T extends Record<string, any>>(
     setErrors({});
   };
 
-  const isValid = isAllFilled(state) && !hasTruthyValue(errors as any);
+  const isAllRequiredFilled = (state: T, requiredFields?: (keyof T)[]) => {
+    if (!requiredFields || requiredFields.length === 0)
+      return isAllFilled(state);
+
+    const newState = Object.fromEntries(
+      requiredFields.map((field) => [field, state[field]]),
+    ) as Partial<T>;
+
+    return isAllFilled(newState as Record<string, any>);
+  };
+
+  const isValid =
+    isAllRequiredFilled(state, options?.requiredFields) &&
+    !hasTruthyValue(errors as any);
 
   return {
     state,
