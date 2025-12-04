@@ -62,6 +62,13 @@
   --breakpoint-xs: 36rem;
 }
 
+:root {
+  /* TOASTIFY */
+  --toastify-color-success: var(--color-success) !;
+  --toastify-color-warning: var(--color-warning);
+  --toastify-color-error: var(--color-danger);
+}
+
 html {
   overflow: hidden;
   width: 100%;

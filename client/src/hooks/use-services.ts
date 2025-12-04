@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
+import { toast } from 'react-toastify';
 
 import { type IMetaResponse } from '@/types/commons';
 
@@ -70,7 +71,10 @@ export const useGet = (url: string, query: any = {}, options?: IGetOptions) => {
       if (currOptions?.onSuccess) currOptions.onSuccess(currResponse.data);
     } catch (err: any) {
       setData(null);
-      setError(err.message);
+      const error = err.errors?.[0].message || err.message;
+      setError(error);
+      console.error(error);
+      if (currOptions?.isShowNotification) toast.error(error);
       if (currOptions?.onError) currOptions.onError(err);
     } finally {
       setLoading(false);
@@ -109,10 +113,13 @@ export const usePost = (url: string, options?: IActionOptions) => {
         headers,
       });
       setResponseData(res.data.data);
+      toast.success(res.data.message);
       if (options?.onSuccess) options.onSuccess(res.data);
     } catch (err: any) {
       setLoadingPost(false);
-      console.error(err.message);
+      const error = err.errors?.[0].message || err.message;
+      console.error(error);
+      toast.error(error);
       if (err.errors) setErrorData(err.errors);
       if (options?.onError) options.onError(err);
     } finally {
@@ -147,10 +154,13 @@ export const usePut = (url: string, options?: IActionOptions) => {
         params && { params },
       );
       setResponseData(res?.data);
+      toast.success(res.data.message);
       if (options?.onSuccess) options.onSuccess();
     } catch (err: any) {
       setLoadingPut(false);
-      console.error(err.message);
+      const error = err.errors?.[0].message || err.message;
+      console.error(error);
+      toast.error(error);
       if (options?.onError) options.onError(err);
     } finally {
       setLoadingPut(false);
@@ -183,10 +193,13 @@ export const usePatch = (url: string, options?: IActionOptions) => {
         params && { params },
       );
       setResponseData(res?.data);
+      toast.success(res.data.message);
       if (options?.onSuccess) options.onSuccess();
     } catch (err: any) {
       setLoadingPatch(false);
-      console.error(err.message);
+      const error = err.errors?.[0].message || err.message;
+      console.error(error);
+      toast.error(error);
       if (options?.onError) options.onError(err);
     } finally {
       setLoadingPatch(false);
@@ -212,7 +225,9 @@ export const useDelete = (url: string, options?: IActionOptions) => {
       if (options?.onSuccess) options.onSuccess();
     } catch (err: any) {
       setLoadingDelete(false);
-      console.error(err.message);
+      const error = err.errors?.[0].message || err.message;
+      console.error(error);
+      toast.error(error);
       if (options?.onError) options.onError(err);
     } finally {
       setLoadingDelete(false);
