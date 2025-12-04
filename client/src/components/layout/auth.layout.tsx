@@ -8,7 +8,7 @@ const AuthLayout = () => {
     <RootLayout>
       <section className="flex h-screen items-center justify-center p-6">
         <Suspense fallback={<p>Loading...</p>}>
-          <div className="relative flex items-center justify-center w-full">
+          <div className="relative flex items-center justify-center w-full h-full">
             <div className="w-full">
               <Outlet />
             </div>
