@@ -2,6 +2,8 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 import { joinClassnames } from '@/utils/commons';
 
+import LoadingIcon from '@/assets/icons/loading.svg?react';
+
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   type?: 'button' | 'submit' | 'reset';
   variant?: 'primary' | 'link';
@@ -9,6 +11,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: () => void;
   children: ReactNode;
   block?: boolean;
+  loading?: boolean;
 }
 
 const Button = ({
@@ -20,6 +23,7 @@ const Button = ({
   block = false,
   disabled = false,
   className = '',
+  loading = false,
   ...rest
 }: ButtonProps) => {
   const variants = {
@@ -38,9 +42,10 @@ const Button = ({
     <button
       type={type}
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || loading}
       className={joinClassnames([
-        'inline-flex items-center justify-center cursor-pointer rounded-2xl font-medium transition-all duration-300 active:scale-[97%] disabled:cursor-not-allowed disabled:active:scale-100 disabled:transform-none disabled:transition-none',
+        'flex gap-0.5 items-center justify-center cursor-pointer rounded-2xl font-medium transition-all duration-300 active:scale-[97%] disabled:cursor-not-allowed disabled:active:scale-100 disabled:transform-none disabled:transition-none',
+        loading ? 'cursor-progress' : '',
         variants[variant],
         sizes[size],
         block ? 'w-full' : 'w-fit',
@@ -48,6 +53,7 @@ const Button = ({
       ])}
       {...rest}
     >
+      {loading && <LoadingIcon />}
       {children}
     </button>
   );

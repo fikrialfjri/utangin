@@ -48,7 +48,7 @@ const RegisterPage = () => {
       },
     },
   );
-  const { handlePost } = usePost('/auth/register', {
+  const { handlePost, loadingPost } = usePost('/auth/register', {
     onSuccess: (res) => {
       const token = res.access_token;
 
@@ -172,7 +172,7 @@ const RegisterPage = () => {
           required
         />
         <footer className="mt-5 flex flex-col items-center">
-          <Button type="submit" block disabled={!isValid}>
+          <Button type="submit" block disabled={!isValid} loading={loadingPost}>
             Buat Akun
           </Button>
         </footer>
