@@ -15,7 +15,7 @@ const LoginPage = () => {
     email: '',
     password: '',
   });
-  const { handlePost } = usePost('/auth/login', {
+  const { handlePost, loadingPost } = usePost('/auth/login', {
     onSuccess: (res) => {
       const token = res.access_token;
 
@@ -62,7 +62,7 @@ const LoginPage = () => {
           required
         />
         <footer className="mt-5 flex flex-col gap-3 items-center">
-          <Button type="submit" block disabled={!isValid}>
+          <Button type="submit" block disabled={!isValid} loading={loadingPost}>
             Masuk
           </Button>
         </footer>
