@@ -1,10 +1,13 @@
-import { useState, type ChangeEvent, type InputHTMLAttributes } from 'react';
+import { useRef, useState } from 'react';
+import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
 
 import { joinClassnames } from '@/utils/commons';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+type InputBaseProps = InputHTMLAttributes<HTMLInputElement>;
+
+interface InputProps extends Omit<InputBaseProps, 'prefix'> {
   id: string;
-  type: 'text' | 'password' | 'email';
+  type: 'text' | 'password' | 'email' | 'date' | 'textarea';
   label: string;
   error?:
     | { status: boolean | undefined; message: string | undefined }
@@ -13,6 +16,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     | undefined;
   required?: true | false;
   requiredMessage?: string;
+  prefix?: ReactNode;
+  suffix?: ReactNode;
 }
 
 const Input = ({
@@ -24,9 +29,12 @@ const Input = ({
   required = false,
   requiredMessage,
   value,
+  prefix,
+  suffix,
   ...rest
 }: InputProps) => {
   const [isTouched, setIsTouched] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setIsTouched(true);
@@ -35,6 +43,10 @@ const Input = ({
 
   const handleBlur = () => {
     setIsTouched(true);
+  };
+
+  const handleWrapperClick = () => {
+    inputRef.current?.focus();
   };
 
   const normalizedError =
@@ -62,27 +74,47 @@ const Input = ({
       <label
         htmlFor={id}
         className={joinClassnames([
-          'block typo-body-md font-medium mb-2 ml-2',
+          'inline-block typo-body-md font-medium mb-2 ml-2',
           showError ? 'text-danger' : 'text-neutral-1',
         ])}
       >
         {label}
         {required && <span className="text-danger">*</span>}
       </label>
-      <input
-        id={id}
-        type={type}
-        value={value}
-        onChange={handleInputChange}
-        onBlur={handleBlur}
+
+      <div
         className={joinClassnames([
-          'h-11 px-4 block w-full border rounded-2xl typo-body-lg text-neutral-1 disabled:opacity-50 disabled:pointer-events-none',
+          'flex items-center gap-2 h-11 px-4 border rounded-2xl transition-all duration-300 pointer cursor-text',
           showError
-            ? 'border-danger  focus:outline-danger'
-            : 'border-neutral-4 focus:outline-primary',
+            ? 'border-danger focus-within:border-danger focus-within:ring-1 focus-within:ring-danger'
+            : 'border-neutral-4 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary',
         ])}
-        {...rest}
-      />
+        onClick={handleWrapperClick}
+      >
+        {prefix && (
+          <span className="typo-body-lg *:text-neutral-3 text-neutral-3 shrink-0">
+            {prefix}
+          </span>
+        )}
+
+        <input
+          ref={inputRef}
+          id={id}
+          type={type}
+          value={value}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          className="flex-1 typo-body-lg text-neutral-1 bg-transparent outline-none disabled:opacity-50 disabled:pointer-events-none"
+          {...rest}
+        />
+
+        {suffix && (
+          <span className="typo-body-lg *:text-neutral-3 text-neutral-3 shrink-0">
+            {suffix}
+          </span>
+        )}
+      </div>
+
       {showError && (
         <div className="ml-2 mt-1 typo-body-md text-danger">{finalMessage}</div>
       )}

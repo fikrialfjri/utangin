@@ -1,6 +1,9 @@
+import { useNavigate } from 'react-router';
+
 import type { IDashboardSummary, IGroupedTransaction } from '@/types/services';
 import dayjs from 'dayjs';
 
+import FloatButton from '@/components/shared/float-button';
 import List from '@/components/shared/list';
 import SummaryCard from '@/components/shared/summary-card';
 
@@ -19,6 +22,8 @@ interface IGetTransaction {
 }
 
 const HomePage = () => {
+  const navigate = useNavigate();
+
   const { data: summaryData }: IGetSummary = useGet('/dashboard/summary');
   const { data: transactionData }: IGetTransaction = useGet('/transaction', {
     group_by: 'month',
@@ -83,6 +88,8 @@ const HomePage = () => {
           ))}
         </ul>
       </section>
+
+      <FloatButton onClick={() => navigate('/form/transaction/create')} />
     </div>
   );
 };

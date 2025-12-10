@@ -33,6 +33,23 @@ const useForm = <T extends Record<string, any>>(
     }));
   };
 
+  const setFieldValue = <K extends keyof T>(key: K, value: T[K]) => {
+    const newValues = { ...state, [key]: value };
+
+    setState(newValues);
+
+    const message = runFieldValidators(
+      key,
+      value,
+      newValues,
+      options?.validators,
+    );
+    setErrors((prev) => ({
+      ...prev,
+      [key]: message || undefined,
+    }));
+  };
+
   const resetForm = () => {
     setState(initialState);
     setErrors({});
@@ -57,6 +74,7 @@ const useForm = <T extends Record<string, any>>(
     state,
     errors,
     handleFormChange,
+    setFieldValue,
     resetForm,
     isValid,
   };
