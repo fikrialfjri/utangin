@@ -7,7 +7,7 @@ export class TransactionResponse {
   amount: number;
   status: TransactionStatus;
   date: Date;
-  description?: string;
+  note?: string;
   due_date?: Date;
   contact: GlobalContactResponse;
 }

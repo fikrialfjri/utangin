@@ -17,7 +17,7 @@ const createTransactionSchema = z.object({
       },
     })
     .positive('Nominal harus lebih dari 0'),
-  description: z
+  note: z
     .string({
       error: (iss) => {
         if (iss.code === 'invalid_type') return 'Deskripsi harus berupa string';
@@ -57,7 +57,7 @@ export class CreateTransactionDto {
     public readonly amount: number,
     public readonly date: string,
     public readonly status: TransactionStatus,
-    public readonly description?: string,
+    public readonly note?: string,
     public readonly due_date?: string,
   ) {}
 }
