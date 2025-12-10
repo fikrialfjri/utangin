@@ -27,3 +27,8 @@ export interface NavItem {
   icon?: ComponentType<{ className?: string }>;
   iconActive?: ComponentType<{ className?: string }>;
 }
+
+export interface ISelectOption {
+  value: string | number;
+  label: string;
+}

@@ -69,6 +69,19 @@
   --toastify-color-error: var(--color-danger);
 }
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: inherit;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+input[type='date'] {
+  accent-color: '#000'; /* e.g., #3b82f6 for blue */
+}
+
 html {
   overflow: hidden;
   width: 100%;
@@ -82,10 +95,9 @@ body {
   height: 100%;
   width: 100%;
   position: fixed;
-  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
 }
 
 .app-container {
-  @apply bg-shades-white mx-auto min-h-screen w-full max-w-xl;
+  @apply bg-shades-white mx-auto h-full min-h-screen w-full max-w-xl;
 }
