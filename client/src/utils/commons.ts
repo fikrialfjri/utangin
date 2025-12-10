@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ISelectOption, NavItem } from '@/types/commons';
 
@@ -47,7 +48,7 @@ export const formatCurrency = (amount: number): string => {
     minimumFractionDigits: 0,
   })
     .format(amount)
-    .replace(/\s/g, '');
+    .replaceAll(/\s/g, '');
 };
 
 export const hasTruthyValue = (obj: Record<string, any>): boolean =>

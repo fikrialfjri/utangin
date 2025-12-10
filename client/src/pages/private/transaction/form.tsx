@@ -12,6 +12,7 @@ import { useGet, usePost } from '@/hooks/use-services';
 import { TRANSACTION_STATUS, TRANSACTION_TYPES } from '@/libs/constants';
 
 import { generateOptions, removeEmptyFields } from '@/utils/commons';
+import { valid } from '@/utils/validators';
 
 const typeOptions = [
   {
@@ -39,10 +40,15 @@ const FormTransactionPage = () => {
         status: TRANSACTION_STATUS.ACTIVE,
         amount: 0,
         date: '',
-        description: '',
+        note: '',
         due_date: '',
       },
-      { requiredFields: ['contact_id', 'type', 'amount', 'date', 'status'] },
+      {
+        requiredFields: ['contact_id', 'type', 'amount', 'date', 'status'],
+        validators: {
+          note: [valid.max('Catatan', 64)],
+        },
+      },
     );
 
   const { data: contactData, refetch: refetchContact } = useGet('/contact');
@@ -55,6 +61,7 @@ const FormTransactionPage = () => {
   const { handlePost, loadingPost } = usePost('/transaction', {
     onSuccess: () => {
       navigate('/');
+      resetForm();
     },
   });
 
@@ -124,13 +131,14 @@ const FormTransactionPage = () => {
           required
         />
         <Input
-          id="description"
-          name="description"
+          id="note"
+          name="note"
           type="text"
           label="Catatan"
           placeholder="Ketik catatan (opsional)"
-          value={state.description}
+          value={state.note}
           onChange={handleFormChange}
+          error={errors.note}
         />
         <Input
           id="due_date"
@@ -143,7 +151,12 @@ const FormTransactionPage = () => {
         />
       </div>
       <footer className="mt-5 flex flex-col gap-3 items-center">
-        <Button type="submit" block disabled={!isValid} loading={loadingPost}>
+        <Button
+          type="submit"
+          block
+          disabled={!isValid || Number(state.amount) <= 0}
+          loading={loadingPost}
+        >
           Simpan
         </Button>
       </footer>

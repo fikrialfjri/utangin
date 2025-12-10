@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
   Inject,
   Injectable,
@@ -39,7 +40,7 @@ export class TransactionService {
       amount: transaction.amount,
       status: transaction.status,
       date: transaction.date,
-      ...(transaction.description && { description: transaction.description }),
+      ...(transaction.note && { note: transaction.note }),
       ...(transaction.due_date && { due_date: transaction.due_date }),
       contact: {
         id: transaction.contact.id,
@@ -101,7 +102,7 @@ export class TransactionService {
         amount: reqBody.amount,
         date: new Date(reqBody.date),
         ...(reqBody.status && { status: reqBody.status }),
-        ...(reqBody.description && { description: reqBody.description }),
+        ...(reqBody.note && { note: reqBody.note }),
         ...(reqBody.due_date && { due_date: new Date(reqBody.due_date) }),
       },
       include: transactionInclude,
@@ -174,7 +175,7 @@ export class TransactionService {
         amount: reqBody.amount,
         date: reqBody.date && new Date(reqBody.date),
         status: reqBody.status,
-        ...(reqBody.description && { description: reqBody.description }),
+        ...(reqBody.note && { note: reqBody.note }),
         ...(reqBody.due_date && { due_date: new Date(reqBody.due_date) }),
       },
       include: transactionInclude,
