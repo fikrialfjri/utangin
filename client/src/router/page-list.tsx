@@ -23,6 +23,12 @@ const pageList = {
       component: lazy(() => import('@/pages/private/setting')),
     },
   ],
+  privateForm: [
+    {
+      path: 'transaction/create',
+      component: lazy(() => import('@/pages/private/transaction/form')),
+    },
+  ],
   auth: [
     {
       path: 'login',

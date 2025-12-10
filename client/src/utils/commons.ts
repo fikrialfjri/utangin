@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { NavItem } from '@/types/commons';
+import type { ISelectOption, NavItem } from '@/types/commons';
 
 import { PASSWORD_RULES } from '@/libs/constants';
 
@@ -63,4 +63,41 @@ export const sentenceCase = (str: string): string =>
 
 export const isAllPasswordRulesFulfilled = (password: string): boolean => {
   return PASSWORD_RULES.every((rule) => rule.regex.test(password));
+};
+
+interface GenerateOptionsKeys {
+  label?: string;
+  value?: string;
+}
+
+export const generateOptions = <
+  T extends { name?: string; id?: string | number },
+>(
+  data: T[] | null | undefined,
+  keys?: GenerateOptionsKeys,
+): ISelectOption[] => {
+  if (!data) return [];
+
+  const labelKey = keys?.label;
+  const valueKey = keys?.value;
+
+  return data.map((item) => {
+    const anyItem = item as Record<string, unknown>;
+
+    const labelSrc = (labelKey && anyItem[labelKey]) ?? item.name ?? '';
+    const valueSrc = (valueKey && anyItem[valueKey]) ?? item.id ?? '';
+
+    return {
+      label: labelSrc as string,
+      value: valueSrc as string | number,
+    };
+  });
+};
+
+export const removeEmptyFields = <T extends Record<string, any>>(obj: T) => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, v]) => v !== '' && v != null),
+  ) as {
+    [K in keyof T as T[K] extends '' | null | undefined ? never : K]: T[K];
+  };
 };

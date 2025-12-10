@@ -28,8 +28,8 @@ const Button = ({
 }: ButtonProps) => {
   const variants = {
     primary:
-      'bg-primary text-shades-white hover:brightness-90 active:brightness-75 disabled:bg-neutral-5 disabled:text-neutral-3 disabled:hover:brightness-100',
-    link: 'text-primary underline underline-offset-3 p-0! m-0! h-auto! hover:brightness-90 active:brightness-75 disabled:bg-neutral-5 disabled:text-neutral-3 disabled:hover:brightness-100',
+      'bg-primary text-shades-white hover:brightness-125 active:brightness-75 disabled:bg-neutral-5 disabled:text-neutral-3 disabled:hover:brightness-100',
+    link: 'text-primary underline underline-offset-3 p-0! m-0! h-auto! hover:brightness-125 active:brightness-75 disabled:bg-neutral-5 disabled:text-neutral-3 disabled:hover:brightness-100',
   };
 
   const sizes = {

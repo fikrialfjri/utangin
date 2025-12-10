@@ -1,6 +1,7 @@
 import { Navigate, Outlet, Route, Routes } from 'react-router';
 
 import AuthLayout from '@/components/layout/auth.layout';
+import FormLayout from '@/components/layout/form.layout';
 import MainLayout from '@/components/layout/main.layout';
 
 import { getToken } from '@/utils/storages';
@@ -23,6 +24,13 @@ const MainRouter = () => {
       <Route element={<PrivateWrapper />}>
         <Route path="/" element={<MainLayout />}>
           {pageList.private.map((li) => {
+            const Element = li.component;
+            return <Route key={li.path} path={li.path} element={<Element />} />;
+          })}
+        </Route>
+
+        <Route path="/form" element={<FormLayout />}>
+          {pageList.privateForm.map((li) => {
             const Element = li.component;
             return <Route key={li.path} path={li.path} element={<Element />} />;
           })}
