@@ -34,7 +34,7 @@ CREATE TABLE "transactions" (
     "id" SERIAL NOT NULL,
     "type" "TransactionType" NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
-    "description" VARCHAR(255),
+    "note" VARCHAR(255),
     "status" "TransactionStatus" NOT NULL DEFAULT 'ACTIVE',
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "due_date" TIMESTAMP(3),
