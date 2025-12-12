@@ -1,7 +1,7 @@
 import type {
   ReactNodeMap,
   StringMap,
-  SummaryCardVariant,
+  SummaryCardVariants,
 } from '@/types/commons';
 import type { ISummary } from '@/types/services';
 
@@ -18,7 +18,7 @@ import ReceivableIcon from '@/assets/icons/receivable.svg?react';
 import { AvatarGroup } from './avatar';
 
 interface IProps {
-  variant: SummaryCardVariant;
+  variant: SummaryCardVariants;
   data: ISummary;
   withShadow?: boolean;
   withColorValue?: boolean;
