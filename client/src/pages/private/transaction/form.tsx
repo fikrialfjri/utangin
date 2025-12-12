@@ -153,11 +153,14 @@ const FormTransactionPage = () => {
       <footer className="mt-5 flex flex-col gap-3 items-center">
         <Button
           type="submit"
-          block
           disabled={!isValid || Number(state.amount) <= 0}
           loading={loadingPost}
+          block
         >
           Simpan
+        </Button>
+        <Button variant="secondary" onClick={() => navigate(-1)} block>
+          Kembali
         </Button>
       </footer>
     </form>
