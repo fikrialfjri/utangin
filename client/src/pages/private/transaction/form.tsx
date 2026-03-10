@@ -1,4 +1,6 @@
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
+
+import type { TransactionType } from '@/types/commons';
 
 import Button from '@/components/shared/button';
 import Input from '@/components/shared/input';
@@ -31,12 +33,17 @@ const typeOptions = [
 
 const FormTransactionPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const transaction_type = searchParams.get(
+    'transaction_type',
+  ) as TransactionType;
 
   const { state, errors, handleFormChange, setFieldValue, resetForm, isValid } =
     useForm(
       {
         contact_id: null,
-        type: TRANSACTION_TYPES.DEBT,
+        type: transaction_type || TRANSACTION_TYPES.DEBT,
         status: TRANSACTION_STATUS.ACTIVE,
         amount: 0,
         date: '',

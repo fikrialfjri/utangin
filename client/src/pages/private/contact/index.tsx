@@ -50,15 +50,20 @@ const ContactPage = () => {
             data={data}
             renderItem={(item: IContact, idx: number) => (
               <List.Item key={item.id ?? idx} variant={item.status}>
-                <List.Item.Meta
-                  avatar={{
-                    src: item.avatar,
-                    name: item.name,
-                  }}
-                  title={item.name}
-                  description={`Transaksi terakhir: ${dayjs(item.last_transaction).format('DD MMM YYYY')}`}
-                />
-                {formatCurrency(item.net_total ?? 0)}
+                <div
+                  className="flex flex-1 cursor-pointer items-center justify-between gap-3"
+                  onClick={() => navigate(`/contact/${item.id}`)}
+                >
+                  <List.Item.Meta
+                    avatar={{
+                      src: item.avatar,
+                      name: item.name,
+                    }}
+                    title={item.name}
+                    description={`Transaksi terakhir: ${dayjs(item.last_transaction).format('DD MMM YYYY')}`}
+                  />
+                  {formatCurrency(item.net_total ?? 0)}
+                </div>
               </List.Item>
             )}
           />

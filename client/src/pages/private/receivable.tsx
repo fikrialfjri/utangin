@@ -4,6 +4,7 @@ import type { IDashboardSummary, IGroupedTransaction } from '@/types/services';
 import dayjs from 'dayjs';
 
 import Empty from '@/components/shared/empty';
+import FloatButton from '@/components/shared/float-button';
 import List from '@/components/shared/list';
 import SummaryCard from '@/components/shared/summary-card';
 
@@ -34,6 +35,13 @@ const ReceivablePage = () => {
     type: TRANSACTION_TYPES.RECEIVABLE,
   });
 
+  const handleNavigateTransaction = () => {
+    navigate({
+      pathname: '/form/transaction/create',
+      search: `transaction_type=${TRANSACTION_TYPES.RECEIVABLE}`,
+    });
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <SummaryCard
@@ -51,12 +59,7 @@ const ReceivablePage = () => {
         {!data?.length ? (
           <Empty
             variant={EMPTY_STATE_VARIANTS.RECEIVABLE}
-            onButtonClick={() =>
-              navigate({
-                pathname: '/form/transaction/create',
-                search: `transaction_type=${TRANSACTION_TYPES.RECEIVABLE}`,
-              })
-            }
+            onButtonClick={handleNavigateTransaction}
             showButton
           />
         ) : (
@@ -76,9 +79,7 @@ const ReceivablePage = () => {
                           name: item.contact.name,
                         }}
                         title={item.contact.name}
-                        description={dayjs(item.contact.date).format(
-                          'DD MMM YYYY',
-                        )}
+                        description={dayjs(item.date).format('DD MMM YYYY')}
                       />
                       {formatCurrency(item.amount)}
                     </List.Item>
@@ -89,6 +90,8 @@ const ReceivablePage = () => {
           </ul>
         )}
       </section>
+
+      <FloatButton onClick={handleNavigateTransaction} />
     </div>
   );
 };

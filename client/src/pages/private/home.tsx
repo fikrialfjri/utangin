@@ -84,9 +84,7 @@ const HomePage = () => {
                           name: item.contact.name,
                         }}
                         title={item.contact.name}
-                        description={dayjs(item.contact.date).format(
-                          'DD MMM YYYY',
-                        )}
+                        description={dayjs(item.date).format('DD MMM YYYY')}
                       />
                       {formatCurrency(item.amount)}
                     </List.Item>

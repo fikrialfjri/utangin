@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import {
+  ContactDetailResponse,
   ContactResponse,
   GlobalContactResponse,
 } from './responses/contact.response';
@@ -22,10 +23,11 @@ export class ContactService {
   toContactResponse(contact: Contact): GlobalContactResponse;
   toContactResponse(contact: Contact, variant: 'basic'): GlobalContactResponse;
   toContactResponse(contact: Contact, variant: 'complete'): ContactResponse;
+  toContactResponse(contact: Contact, variant: 'detail'): ContactDetailResponse;
   toContactResponse(
     contact: Contact,
-    variant: 'basic' | 'complete' = 'basic',
-  ): GlobalContactResponse | ContactResponse {
+    variant: 'basic' | 'complete' | 'detail' = 'basic',
+  ): GlobalContactResponse | ContactResponse | ContactDetailResponse {
     const basicResponse = {
       id: contact.id,
       name: contact.name,
@@ -62,7 +64,20 @@ export class ContactService {
       last_transaction,
     };
 
-    return completeResponse;
+    if (variant === 'complete') return completeResponse;
+
+    return {
+      ...completeResponse,
+      transactions: contact.transactions.map((tx) => ({
+        id: tx.id,
+        type: tx.type,
+        amount: tx.amount,
+        status: tx.status,
+        date: tx.date,
+        ...(tx.note && { note: tx.note }),
+        ...(tx.due_date && { due_date: tx.due_date }),
+      })),
+    };
   }
 
   async checkContactMustExists(username: string, id: number): Promise<Contact> {
@@ -106,10 +121,10 @@ export class ContactService {
     );
   }
 
-  async findOne(username: string, id: number): Promise<GlobalContactResponse> {
+  async findOne(username: string, id: number): Promise<ContactDetailResponse> {
     const contact = await this.checkContactMustExists(username, id);
 
-    return this.toContactResponse(contact);
+    return this.toContactResponse(contact, 'detail');
   }
 
   async update(

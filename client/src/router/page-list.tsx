@@ -19,6 +19,10 @@ const pageList = {
       component: lazy(() => import('@/pages/private/contact')),
     },
     {
+      path: '/contact/:id',
+      component: lazy(() => import('@/pages/private/contact/detail')),
+    },
+    {
       path: '/setting',
       component: lazy(() => import('@/pages/private/setting')),
     },

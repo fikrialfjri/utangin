@@ -33,6 +33,10 @@ export interface ITransaction {
   contact: IContact;
 }
 
+export interface IContactDetail extends IContact {
+  transactions: ITransaction[];
+}
+
 export interface IGroupedTransaction {
   month: string;
   label: string;
