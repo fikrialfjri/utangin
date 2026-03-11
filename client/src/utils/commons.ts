@@ -102,3 +102,11 @@ export const removeEmptyFields = <T extends Record<string, any>>(obj: T) => {
     [K in keyof T as T[K] extends '' | null | undefined ? never : K]: T[K];
   };
 };
+
+export const getInitials = (name: string) => {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  const first = parts[0]?.[0] ?? '';
+  const second = parts[1]?.[0] ?? '';
+  return (first + second).toUpperCase();
+};

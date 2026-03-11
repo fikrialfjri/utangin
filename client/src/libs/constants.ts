@@ -1,6 +1,7 @@
 export const UTANGIN_API_BASE_URL = import.meta.env.VITE_UTANGIN_API_BASE_URL;
 export const UTANGIN_ASSETS_BASE_URL = import.meta.env
   .VITE_UTANGIN_ASSETS_BASE_URL;
+
 export const TRANSACTION_TYPES = {
   DEBT: 'DEBT',
   RECEIVABLE: 'RECEIVABLE',
@@ -13,8 +14,22 @@ export const SUMMARY_CARD_VARIANTS = {
   POTENTIAL: 'POTENTIAL',
   CURRENT: 'CURRENT',
   RECEIVABLE_DEBT: 'RECEIVABLE_DEBT',
+  CONTACT_DETAIL: 'CONTACT_DETAIL',
   ...TRANSACTION_TYPES,
-};
+} as const;
+export const EMPTY_STATE_VARIANTS = {
+  DEFAULT: 'DEFAULT',
+  TRANSACTION: 'TRANSACTION',
+  CONTACT: 'CONTACT',
+  ...TRANSACTION_TYPES,
+} as const;
+export const VARIANT_LABELS = {
+  TRANSACTION: 'Transaksi',
+  DEBT: 'Utang',
+  RECEIVABLE: 'Piutang',
+  CONTACT: 'Kontak',
+} as const;
+
 export const PASSWORD_RULES: {
   regex: RegExp;
   label: string;
@@ -24,4 +39,5 @@ export const PASSWORD_RULES: {
   { regex: /[0-9]/, label: 'Minimal 1 Angka (0-9)' },
   { regex: /[!@#$%^&*]/, label: 'Minimal 1 Simbol (!@#$%^&*)' },
 ];
+
 export const DESKTOP_BREAKPOINT = '36rem';

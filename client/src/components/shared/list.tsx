@@ -17,6 +17,7 @@ interface IListProps {
 interface IListItemProps {
   variant?: TransactionType;
   children: ReactNode;
+  onClick?: () => void;
 }
 interface IListItemMetaProps {
   avatar?: IAvatarProps;
@@ -45,7 +46,7 @@ const List: ListComponent = ({ data, renderItem }) => {
   );
 };
 
-const ListItem = ({ variant, children }: IListItemProps) => {
+const ListItem = ({ variant, children, onClick }: IListItemProps) => {
   const wrapperClassnames: StringMap = {
     DEBT: 'text-danger!',
     RECEIVABLE: 'text-warning!',
@@ -56,7 +57,9 @@ const ListItem = ({ variant, children }: IListItemProps) => {
       className={joinClassnames([
         'typo-body-md font-bold! flex items-center justify-between gap-3 text-neutral-2',
         wrapperClassnames[variant!],
+        onClick && 'cursor-pointer',
       ])}
+      onClick={onClick}
     >
       {children}
     </div>

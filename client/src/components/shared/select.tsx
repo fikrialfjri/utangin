@@ -7,6 +7,8 @@ import Input from '@/components/shared/input';
 
 import { joinClassnames } from '@/utils/commons';
 
+import Empty from './empty';
+
 interface SelectProps {
   name: string;
   options: ISelectOption[];
@@ -163,10 +165,13 @@ const Select = ({
       )}
 
       {isOpen && filteredOptions.length === 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-neutral-5 rounded-2xl shadow-xl py-3">
+        <div className="absolute z-50 w-full mt-1 bg-white border border-neutral-5 rounded-2xl shadow-xl py-3 flex flex-col gap-3">
+          <Empty illustrationClassName="w-1/4 h-1/4" />
           <button
             type="button"
-            className="w-full text-left px-4 py-2 typo-body-sm text-primary cursor-pointer hover:bg-neutral-6 active:bg-primary-50 transition-colors"
+            className={joinClassnames([
+              'w-full text-left px-4 py-2 typo-body-sm text-primary cursor-pointer hover:bg-neutral-6 active:bg-primary-50 transition-colors disabled:cursor-not-allowed disabled:active:bg-neutral-6',
+            ])}
             onClick={() => {
               if (!onCreate) return;
               const keyword = searchQuery.trim();
@@ -175,8 +180,11 @@ const Select = ({
               setIsOpen(false);
               setSearchQuery('');
             }}
+            disabled={!searchQuery.length}
           >
-            Tambahkan data "{searchQuery}"
+            {!searchQuery.length
+              ? 'Ketik untuk tambahkan data'
+              : `Tambahkan data "${searchQuery}"`}
           </button>
         </div>
       )}

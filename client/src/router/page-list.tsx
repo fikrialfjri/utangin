@@ -23,10 +23,32 @@ const pageList = {
       component: lazy(() => import('@/pages/private/setting')),
     },
   ],
+  privateSubPage: [
+    {
+      path: '/contact/:id',
+      component: lazy(() => import('@/pages/private/contact/detail')),
+    },
+    {
+      path: '/transaction/:id',
+      component: lazy(() => import('@/pages/private/transaction/detail')),
+    },
+  ],
   privateForm: [
     {
       path: 'transaction/create',
       component: lazy(() => import('@/pages/private/transaction/form')),
+    },
+    {
+      path: 'transaction/:id/edit',
+      component: lazy(() => import('@/pages/private/transaction/form')),
+    },
+    {
+      path: 'transaction/:id/payment',
+      component: lazy(() => import('@/pages/private/transaction/payment-form')),
+    },
+    {
+      path: 'transaction/:id/payment/:paymentId/edit',
+      component: lazy(() => import('@/pages/private/transaction/payment-form')),
     },
   ],
   auth: [

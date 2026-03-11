@@ -1,11 +1,14 @@
+import type { ReactNode } from 'react';
+
 import type {
   ReactNodeMap,
   StringMap,
-  SummaryCardVariant,
+  SummaryCardVariants,
+  TransactionType,
 } from '@/types/commons';
 import type { ISummary } from '@/types/services';
 
-import { TRANSACTION_TYPES } from '@/libs/constants';
+import { SUMMARY_CARD_VARIANTS, TRANSACTION_TYPES } from '@/libs/constants';
 
 import { isMinusNumber, isZeroNumber, joinClassnames } from '@/utils/commons';
 
@@ -15,10 +18,17 @@ import PotentialSaldoIcon from '@/assets/icons/potential-saldo.svg?react';
 import ReceivableDebtIcon from '@/assets/icons/receivable-debt.svg?react';
 import ReceivableIcon from '@/assets/icons/receivable.svg?react';
 
-import { AvatarGroup } from './avatar';
+import Avatar, { AvatarGroup } from './avatar';
+
+interface IContactInfo {
+  name: string;
+  avatar?: string | null;
+  description?: string;
+  status?: TransactionType;
+}
 
 interface IProps {
-  variant: SummaryCardVariant;
+  variant: SummaryCardVariants;
   data: ISummary;
   withShadow?: boolean;
   withColorValue?: boolean;
@@ -26,6 +36,7 @@ interface IProps {
   centered?: boolean;
   titleClassName?: string;
   withoutRecentContacts?: boolean;
+  contactInfo?: IContactInfo;
 }
 
 const SummaryCard = ({
@@ -37,11 +48,13 @@ const SummaryCard = ({
   centered,
   titleClassName,
   withoutRecentContacts,
+  contactInfo,
 }: IProps) => {
   const wrapperClassnames: StringMap = {
     POTENTIAL: 'bg-primary text-shades-white',
     CURRENT: 'bg-primary-50 text-neutral-2',
     RECEIVABLE_DEBT: 'bg-primary-50 text-neutral-2',
+    CONTACT_DETAIL: 'bg-primary-50 text-neutral-2',
     DEBT: 'bg-danger text-shades-white',
     RECEIVABLE: 'bg-warning text-shades-white',
   };
@@ -62,6 +75,20 @@ const SummaryCard = ({
     RECEIVABLE: 'Total Piutang',
   };
 
+  const isContactDetail = variant === SUMMARY_CARD_VARIANTS.CONTACT_DETAIL;
+
+  const resolvedIcon: ReactNode = isContactDetail
+    ? contactInfo?.status === TRANSACTION_TYPES.DEBT
+      ? renderedIcons[TRANSACTION_TYPES.DEBT]
+      : renderedIcons[TRANSACTION_TYPES.RECEIVABLE]
+    : renderedIcons[variant];
+
+  const resolvedLabel: string = isContactDetail
+    ? contactInfo?.status === TRANSACTION_TYPES.DEBT
+      ? 'Sisa Hutang'
+      : 'Sisa Piutang'
+    : renderedLabel[variant];
+
   return (
     <div
       className={joinClassnames([
@@ -71,6 +98,23 @@ const SummaryCard = ({
         className,
       ])}
     >
+      {isContactDetail && contactInfo ? (
+        <div className="flex items-center gap-3">
+          <Avatar
+            src={contactInfo.avatar}
+            name={contactInfo.name}
+            size="default"
+          />
+          <div className="text-neutral-2">
+            <h4 className="typo-body-md font-semibold!">{contactInfo.name}</h4>
+            {contactInfo.description && (
+              <p className="typo-caption-sm text-neutral-3">
+                {contactInfo.description}
+              </p>
+            )}
+          </div>
+        </div>
+      ) : null}
       <div
         className={joinClassnames([
           'flex flex-col',
@@ -78,16 +122,15 @@ const SummaryCard = ({
         ])}
       >
         <div className="flex items-center gap-1">
-          <div className="*:w-3.5 *:h-3.5">{renderedIcons[variant]}</div>
-          <label className="typo-body-md font-normal!">
-            {renderedLabel[variant]}
-          </label>
+          <div className="*:w-3.5 *:h-3.5">{resolvedIcon}</div>
+          <label className="typo-body-md font-normal!">{resolvedLabel}</label>
         </div>
         <h3
           className={joinClassnames([
             'typo-headline-md font-bold!',
             withColorValue
-              ? isMinusNumber(data?.nominal ?? 0)
+              ? isMinusNumber(data?.nominal ?? 0) ||
+                contactInfo?.status === TRANSACTION_TYPES.DEBT
                 ? 'text-danger'
                 : isZeroNumber(data?.nominal ?? 0)
                   ? ''
@@ -96,7 +139,11 @@ const SummaryCard = ({
             titleClassName,
           ])}
         >
-          {isMinusNumber(data?.nominal ?? 0) ? '-' : ''}Rp
+          {isMinusNumber(data?.nominal ?? 0) ||
+          contactInfo?.status === TRANSACTION_TYPES.DEBT
+            ? '-'
+            : ''}
+          Rp
           {Math.abs(data?.nominal ?? 0)?.toLocaleString()}
         </h3>
       </div>
