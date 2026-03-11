@@ -6,7 +6,7 @@ import LoadingIcon from '@/assets/icons/loading.svg?react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   type?: 'button' | 'submit' | 'reset';
-  variant?: 'primary' | 'link';
+  variant?: 'primary' | 'secondary' | 'danger' | 'link' | 'danger-link';
   size?: 'sm' | 'md' | 'lg';
   onClick?: () => void;
   children: ReactNode;
@@ -29,7 +29,13 @@ const Button = ({
   const variants = {
     primary:
       'bg-primary text-shades-white hover:brightness-125 active:brightness-75 disabled:bg-neutral-5 disabled:text-neutral-3 disabled:hover:brightness-100',
+    secondary:
+      'bg-primary/10 text-primary border border-primary hover:bg-primary/20 active:bg-primary/30 disabled:bg-neutral-5 disabled:text-neutral-3 disabled:border-neutral-5 disabled:hover:bg-neutral-5',
+    danger:
+      'bg-danger text-shades-white hover:brightness-125 active:brightness-75 disabled:bg-neutral-5 disabled:text-neutral-3 disabled:hover:brightness-100',
     link: 'text-primary underline underline-offset-3 p-0! m-0! h-auto! hover:brightness-125 active:brightness-75 disabled:bg-neutral-5 disabled:text-neutral-3 disabled:hover:brightness-100',
+    'danger-link':
+      'text-danger p-0! m-0! h-auto! hover:opacity-70 active:opacity-50 disabled:text-neutral-3 disabled:hover:opacity-100',
   };
 
   const sizes = {

@@ -15,6 +15,7 @@ import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { BaseResponse } from 'src/common/interfaces/base-response.interface';
 import {
   GroupedTransactionResponse,
@@ -115,6 +116,40 @@ export class TransactionController {
     return {
       message: 'Data transaksi berhasil dihapus',
       data: await this.transactionService.remove(req.user.username, id),
+    };
+  }
+
+  @Put(':id/payment/:paymentId')
+  async updatePayment(
+    @Req() req: Request & { user: { username: string } },
+    @Param('id', ParseIntPipe) id: number,
+    @Param('paymentId', ParseIntPipe) paymentId: number,
+    @Body() reqBody: UpdatePaymentDto,
+  ): Promise<BaseResponse<TransactionDetailResponse>> {
+    return {
+      message: 'Data pembayaran berhasil diperbarui',
+      data: await this.transactionService.updatePayment(
+        req.user.username,
+        id,
+        paymentId,
+        reqBody,
+      ),
+    };
+  }
+
+  @Delete(':id/payment/:paymentId')
+  async deletePayment(
+    @Req() req: Request & { user: { username: string } },
+    @Param('id', ParseIntPipe) id: number,
+    @Param('paymentId', ParseIntPipe) paymentId: number,
+  ): Promise<BaseResponse<TransactionDetailResponse>> {
+    return {
+      message: 'Data pembayaran berhasil dihapus',
+      data: await this.transactionService.deletePayment(
+        req.user.username,
+        id,
+        paymentId,
+      ),
     };
   }
 }

@@ -1,22 +1,53 @@
-import { useNavigate, useParams } from 'react-router';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router';
 
 import Button from '@/components/shared/button';
+import ConfirmDialog from '@/components/shared/confirm-dialog';
 import Input from '@/components/shared/input';
 import InputCurrency from '@/components/shared/input-currency';
 
 import useForm from '@/hooks/use-form';
 import { usePageTitle } from '@/hooks/use-page-header';
-import { usePost } from '@/hooks/use-services';
+import { useDelete, usePost, usePut } from '@/hooks/use-services';
 
-import { removeEmptyFields } from '@/utils/commons';
+import { formatCurrency, removeEmptyFields } from '@/utils/commons';
 import { valid } from '@/utils/validators';
 
+interface PaymentRouteState {
+  payment?: {
+    id: number;
+    amount: number;
+    date: string;
+    note?: string;
+  };
+  remaining: number;
+}
+
 const FormPaymentPage = () => {
-  usePageTitle('Tambah Pembayaran');
   const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
 
-  const { state, errors, handleFormChange, resetForm, isValid } = useForm(
+  const routeState = location.state as PaymentRouteState | null;
+  const isEdit = !!routeState?.payment;
+  const remaining = routeState?.remaining ?? 0;
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  usePageTitle(isEdit ? 'Edit Pembayaran' : 'Tambah Pembayaran');
+
+  const maxAmount = isEdit
+    ? remaining + (routeState?.payment?.amount ?? 0)
+    : remaining;
+
+  const {
+    state,
+    errors,
+    handleFormChange,
+    setFormState,
+    setFieldValue,
+    resetForm,
+    isValid,
+  } = useForm(
     {
       amount: 0,
       date: '',
@@ -30,6 +61,17 @@ const FormPaymentPage = () => {
     },
   );
 
+  useEffect(() => {
+    if (routeState?.payment) {
+      setFormState({
+        amount: routeState.payment.amount,
+        date: routeState.payment.date,
+        note: routeState.payment.note ?? '',
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const { handlePost, loadingPost } = usePost(`/transaction/${id}/payment`, {
     onSuccess: () => {
       navigate(`/transaction/${id}`);
@@ -37,29 +79,83 @@ const FormPaymentPage = () => {
     },
   });
 
+  const { handlePut, loadingPut } = usePut(
+    `/transaction/${id}/payment/${routeState?.payment?.id}`,
+    {
+      onSuccess: () => {
+        navigate(`/transaction/${id}`);
+        resetForm();
+      },
+    },
+  );
+
+  const { handleDelete, loadingDelete } = useDelete(
+    `/transaction/${id}/payment/${routeState?.payment?.id}`,
+    {
+      onSuccess: () => {
+        navigate(`/transaction/${id}`);
+      },
+    },
+  );
+
+  const handleFullPayment = () => {
+    const fullAmount = isEdit
+      ? remaining + (routeState?.payment?.amount ?? 0)
+      : remaining;
+    setFieldValue('amount', fullAmount);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValid || isExceeded) return;
+
+    const payload = removeEmptyFields({
+      ...state,
+      amount: Number(state.amount),
+    });
+
+    if (isEdit) {
+      await handlePut(payload);
+    } else {
+      await handlePost(payload);
+    }
+  };
+
+  const loading = loadingPost || loadingPut;
+  const isExceeded = maxAmount > 0 && Number(state.amount) > maxAmount;
+
   return (
     <form
       className="flex flex-col justify-between h-full"
-      onSubmit={async (e) => {
-        e.preventDefault();
-
-        if (!isValid) return;
-
-        await handlePost(
-          removeEmptyFields({
-            ...state,
-            amount: Number(state.amount),
-          }),
-        );
-      }}
+      onSubmit={handleSubmit}
     >
       <div className="flex flex-col gap-5">
+        {remaining > 0 && (
+          <div className="flex items-center justify-between rounded-2xl bg-primary/10 px-4 py-3">
+            <div className="flex flex-col">
+              <span className="typo-caption-sm text-neutral-3">
+                Sisa Pembayaran
+              </span>
+              <span className="typo-body-md font-semibold! text-primary">
+                {formatCurrency(remaining)}
+              </span>
+            </div>
+            <Button type="button" size="sm" onClick={handleFullPayment}>
+              Bayar Lunas
+            </Button>
+          </div>
+        )}
         <InputCurrency
           id="jumlah"
           name="amount"
-          label="Jumlah Pembayaran"
+          label="Nominal"
           value={state.amount}
           onChange={handleFormChange}
+          error={
+            isExceeded
+              ? `Nominal melebihi sisa pembayaran (${formatCurrency(maxAmount)})`
+              : undefined
+          }
           required
         />
         <Input
@@ -76,23 +172,43 @@ const FormPaymentPage = () => {
           id="note"
           name="note"
           type="text"
-          label="Catatan"
+          label="Catatan (opsional)"
           placeholder="Ketik catatan (opsional)"
           value={state.note}
           onChange={handleFormChange}
           error={errors.note}
+          maxLength={64}
         />
       </div>
       <footer className="mt-5 flex flex-col gap-3 items-center">
         <Button
           type="submit"
           block
-          disabled={!isValid || Number(state.amount) <= 0}
-          loading={loadingPost}
+          disabled={!isValid || Number(state.amount) <= 0 || isExceeded}
+          loading={loading}
         >
-          Simpan Pembayaran
+          {isEdit ? 'Simpan Perubahan' : 'Simpan Pembayaran'}
         </Button>
+        {isEdit && (
+          <Button
+            type="button"
+            variant="danger-link"
+            onClick={() => setConfirmOpen(true)}
+          >
+            Hapus Pembayaran
+          </Button>
+        )}
       </footer>
+
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => handleDelete()}
+        title="Yakin ingin menghapus pembayaran ini?"
+        message="Data pembayaran yang dihapus tidak dapat dikembalikan."
+        confirmLabel="Ya, Hapus"
+        loading={loadingDelete}
+      />
     </form>
   );
 };

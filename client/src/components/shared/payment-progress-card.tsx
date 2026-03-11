@@ -82,7 +82,7 @@ const PaymentProgressCard = ({
           <h4
             className={joinClassnames([
               'typo-headline-lg font-bold! leading-none!',
-              totalPaid > 0 ? 'text-success' : 'text-neutral-3',
+              totalPaid > 0 ? 'text-primary' : 'text-neutral-3',
             ])}
           >
             {formatCurrency(totalPaid)}

@@ -27,7 +27,7 @@ import TrashIcon from '@/assets/icons/trash.svg?react';
 const TransactionDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [actionDrawerOpen, setActionDrawerOpen] = useState(false);
 
   const { data: transaction } = useGet(`/transaction/${id}`) as {
     data: ITransactionDetail;
@@ -41,19 +41,35 @@ const TransactionDetailPage = () => {
   usePageHeaderAction(
     <button
       type="button"
-      onClick={() => setDrawerOpen(true)}
+      onClick={() => setActionDrawerOpen(true)}
       className="flex items-center justify-center w-8 h-8 rounded-full cursor-pointer transition-opacity hover:opacity-70"
     >
       <MoreVerticalIcon className="w-5 h-5 text-shades-white" />
     </button>,
   );
 
+  const navigateToPaymentForm = (payment?: IPayment) => {
+    navigate(`/form/transaction/${id}/payment`, {
+      state: {
+        remaining: transaction?.remaining ?? 0,
+        ...(payment && {
+          payment: {
+            id: payment.id,
+            amount: payment.amount,
+            date: dayjs(payment.date).format('YYYY-MM-DD'),
+            note: payment.note,
+          },
+        }),
+      },
+    });
+  };
+
   const actionItems = [
     {
       icon: <EditIcon className="w-5 h-5" />,
       label: `Edit ${typeLabel}`,
       onClick: () => {
-        setDrawerOpen(false);
+        setActionDrawerOpen(false);
         // TODO: navigate to edit form
       },
     },
@@ -61,8 +77,8 @@ const TransactionDetailPage = () => {
       icon: <PaymentIcon className="w-5 h-5" />,
       label: 'Tambah Pembayaran',
       onClick: () => {
-        setDrawerOpen(false);
-        navigate(`/form/transaction/${id}/payment`);
+        setActionDrawerOpen(false);
+        navigateToPaymentForm();
       },
     },
     {
@@ -70,7 +86,7 @@ const TransactionDetailPage = () => {
       label: `Hapus ${typeLabel}`,
       danger: true,
       onClick: () => {
-        setDrawerOpen(false);
+        setActionDrawerOpen(false);
         // TODO: handle delete
       },
     },
@@ -122,9 +138,10 @@ const TransactionDetailPage = () => {
           percentage={transaction?.percentage ?? 0}
           paymentCount={transaction?.payments?.length ?? 0}
           isDebt={isDebt}
+          isPaid={transaction?.status === 'PAID'}
           onEdit={
             transaction?.status === 'ACTIVE'
-              ? () => navigate(`/form/transaction/${id}/payment`)
+              ? () => navigateToPaymentForm()
               : undefined
           }
         />
@@ -138,7 +155,11 @@ const TransactionDetailPage = () => {
           <List
             data={transaction.payments}
             renderItem={(item: IPayment) => (
-              <List.Item key={item.id} variant={transaction.type}>
+              <List.Item
+                key={item.id}
+                variant={transaction.type}
+                onClick={() => navigateToPaymentForm(item)}
+              >
                 <div className="flex flex-col">
                   <h4 className="typo-body-md font-semibold! text-neutral-2">
                     {dayjs(item.date).format('DD MMMM YYYY')}
@@ -164,12 +185,16 @@ const TransactionDetailPage = () => {
             }
             showButton={transaction?.status === 'ACTIVE'}
             buttonLabel="Tambah Pembayaran"
-            onButtonClick={() => navigate(`/form/transaction/${id}/payment`)}
+            onButtonClick={() => navigateToPaymentForm()}
           />
         )}
       </section>
 
-      <BottomDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)}>
+      {/* Action Drawer */}
+      <BottomDrawer
+        isOpen={actionDrawerOpen}
+        onClose={() => setActionDrawerOpen(false)}
+      >
         <div className="flex flex-col">
           {actionItems.map((item) => (
             <button
