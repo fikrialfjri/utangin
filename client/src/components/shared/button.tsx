@@ -50,7 +50,7 @@ const Button = ({
       onClick={onClick}
       disabled={disabled || loading}
       className={joinClassnames([
-        'flex gap-0.5 items-center justify-center cursor-pointer rounded-2xl font-medium transition-all duration-300 active:scale-[97%] disabled:cursor-not-allowed disabled:active:scale-100 disabled:transform-none disabled:transition-none',
+        'flex gap-0.5 items-center justify-center cursor-pointer rounded-2xl font-semibold! transition-all duration-300 hover:brightness-125 active:brightness-75 active:scale-[97%] disabled:text-neutral-3 disabled:hover:brightness-100 disabled:bg-neutral-5 disabled:cursor-not-allowed disabled:active:scale-100 disabled:transform-none disabled:transition-none',
         loading ? 'cursor-progress' : '',
         variants[variant],
         sizes[size],

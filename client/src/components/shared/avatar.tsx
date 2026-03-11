@@ -1,7 +1,8 @@
 import type { StringMap } from '@/types/commons';
 import type { IContact } from '@/types/services';
 
-import { joinClassnames } from '@/utils/commons';
+import { getColors } from '@/utils/colors';
+import { getInitials, joinClassnames } from '@/utils/commons';
 
 import { Image } from './image';
 
@@ -21,21 +22,38 @@ export interface IAvatarProps extends BaseProps {
 }
 
 const Avatar = ({ src, name, size = 'default', className }: IAvatarProps) => {
+  const initials = getInitials(name);
+  const { bgColor, textColor } = getColors(name);
+  const sizeClass = avatarSizes[size];
+
+  if (src && src.length > 0) {
+    return (
+      <Image
+        className={joinClassnames([
+          'rounded-full aspect-auto',
+          sizeClass,
+          className,
+        ])}
+        src={src}
+        alt={`${name} avatar`}
+        loading="lazy"
+      />
+    );
+  }
+
   return (
-    <Image
+    <div
       className={joinClassnames([
-        'rounded-full aspect-auto bg-primary-50',
-        avatarSizes[size],
+        'inline-flex items-center justify-center rounded-full select-none font-semibold',
+        bgColor,
+        textColor,
+        sizeClass,
         className,
       ])}
-      src={
-        src?.length
-          ? src
-          : `https://avatar.iran.liara.run/username?username=${name}`
-      }
-      alt="avatar"
-      loading="lazy"
-    />
+      aria-label={name}
+    >
+      {initials}
+    </div>
   );
 };
 

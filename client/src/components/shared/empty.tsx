@@ -7,13 +7,14 @@ import { VARIANT_LABELS } from '@/libs/constants';
 
 import EmptyContact from '@/assets/illustrations/empty-contact.svg?react';
 import EmptyDebt from '@/assets/illustrations/empty-debt.svg?react';
+import EmptyDefault from '@/assets/illustrations/empty-default.svg?react';
 import EmptyReceivable from '@/assets/illustrations/empty-receivable.svg?react';
 import EmptyTransaction from '@/assets/illustrations/empty-transaction.svg?react';
 
 import Button from './button';
 
 interface EmptyProps {
-  variant: EmptyVariants;
+  variant?: EmptyVariants;
   showButton?: boolean;
   onButtonClick?: () => void;
   illustrationClassName?: string;
@@ -22,7 +23,7 @@ interface EmptyProps {
 }
 
 const Empty = ({
-  variant,
+  variant = 'DEFAULT',
   showButton,
   onButtonClick,
   illustrationClassName,
@@ -30,6 +31,11 @@ const Empty = ({
   buttonLabel,
 }: EmptyProps) => {
   const renderedIllustration: ReactNodeMap = {
+    DEFAULT: (
+      <EmptyDefault
+        className={illustrationClassName || 'w-1/3 h-1/3 mx-auto mt-10'}
+      />
+    ),
     TRANSACTION: (
       <EmptyTransaction
         className={illustrationClassName || 'w-1/3 h-1/3 mx-auto mt-10'}
