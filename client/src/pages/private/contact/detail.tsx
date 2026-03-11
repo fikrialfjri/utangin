@@ -7,6 +7,7 @@ import FloatButton from '@/components/shared/float-button';
 import List from '@/components/shared/list';
 import SummaryCard from '@/components/shared/summary-card';
 
+import { usePageTitle } from '@/hooks/use-page-title';
 import { useGet } from '@/hooks/use-services';
 
 import { SUMMARY_CARD_VARIANTS, TRANSACTION_TYPES } from '@/libs/constants';
@@ -18,6 +19,7 @@ interface IGetContactDetail {
 }
 
 const ContactDetailPage = () => {
+  usePageTitle('Detail Kontak');
   const { id } = useParams();
   const navigate = useNavigate();
 

@@ -8,11 +8,12 @@ import Empty from '@/components/shared/empty';
 import List from '@/components/shared/list';
 import PaymentProgressCard from '@/components/shared/payment-progress-card';
 
+import { usePageTitle } from '@/hooks/use-page-title';
 import { useGet } from '@/hooks/use-services';
 
 import { TRANSACTION_TYPES } from '@/libs/constants';
 
-import { formatCurrency, joinClassnames } from '@/utils/commons';
+import { formatCurrency } from '@/utils/commons';
 
 import DebtIcon from '@/assets/icons/debt.svg?react';
 import ReceivableIcon from '@/assets/icons/receivable.svg?react';
@@ -28,6 +29,8 @@ const TransactionDetailPage = () => {
   const isDebt = transaction?.type === TRANSACTION_TYPES.DEBT;
   const typeLabel = isDebt ? 'Hutang' : 'Piutang';
   const remainLabel = isDebt ? 'Sisa Hutang' : 'Sisa Piutang';
+
+  usePageTitle('Detail Transaksi');
 
   return (
     <div className="flex flex-col gap-6">

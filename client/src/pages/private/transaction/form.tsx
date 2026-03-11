@@ -9,6 +9,7 @@ import RadioGroup from '@/components/shared/radio-group';
 import Select from '@/components/shared/select';
 
 import useForm from '@/hooks/use-form';
+import { usePageTitle } from '@/hooks/use-page-title';
 import { useGet, usePost } from '@/hooks/use-services';
 
 import { TRANSACTION_STATUS, TRANSACTION_TYPES } from '@/libs/constants';
@@ -57,6 +58,10 @@ const FormTransactionPage = () => {
         },
       },
     );
+
+  const titleLabel =
+    state.type === TRANSACTION_TYPES.DEBT ? 'Tambah Hutang' : 'Tambah Piutang';
+  usePageTitle(titleLabel);
 
   const { data: contactData, refetch: refetchContact } = useGet('/contact');
   const { handlePost: handlePostContact } = usePost('/contact', {

@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 
+import CheckCircleIcon from '@/assets/icons/check-circle.svg?react';
+import EditIcon from '@/assets/icons/edit.svg?react';
+
 import { formatCurrency, joinClassnames } from '@/utils/commons';
 
 interface PaymentProgressCardProps {
@@ -49,30 +52,13 @@ const PaymentProgressCard = ({
           onClick={onEdit}
           className="absolute top-4 right-4 flex items-center justify-center rounded-full p-1 cursor-pointer transition-opacity hover:opacity-70"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M12 20h9M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
-              stroke="var(--color-primary)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <EditIcon className="w-4 h-4 text-primary" />
         </button>
       )}
       <div className="flex flex-col items-center">
         {isPaid ? (
           <div className="flex items-center gap-1.5">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="12" className="fill-success" />
-              <path
-                d="M7 12.5L10.5 16L17 9"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <CheckCircleIcon className="w-[18px] h-[18px] text-success" />
             <span className="typo-body-md font-semibold! text-success">
               Lunas
             </span>

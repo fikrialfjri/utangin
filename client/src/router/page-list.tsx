@@ -19,16 +19,18 @@ const pageList = {
       component: lazy(() => import('@/pages/private/contact')),
     },
     {
+      path: '/setting',
+      component: lazy(() => import('@/pages/private/setting')),
+    },
+  ],
+  privateSubPage: [
+    {
       path: '/contact/:id',
       component: lazy(() => import('@/pages/private/contact/detail')),
     },
     {
       path: '/transaction/:id',
       component: lazy(() => import('@/pages/private/transaction/detail')),
-    },
-    {
-      path: '/setting',
-      component: lazy(() => import('@/pages/private/setting')),
     },
   ],
   privateForm: [
