@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 
+import type { IPayment, ITransactionDetail } from '@/types/services';
+import dayjs from 'dayjs';
+
 import Button from '@/components/shared/button';
 import ConfirmDialog from '@/components/shared/confirm-dialog';
 import Input from '@/components/shared/input';
@@ -8,36 +11,35 @@ import InputCurrency from '@/components/shared/input-currency';
 
 import useForm from '@/hooks/use-form';
 import { usePageTitle } from '@/hooks/use-page-header';
-import { useDelete, usePost, usePut } from '@/hooks/use-services';
+import { useDelete, useGet, usePost, usePut } from '@/hooks/use-services';
 
 import { formatCurrency, removeEmptyFields } from '@/utils/commons';
 import { valid } from '@/utils/validators';
 
-interface PaymentRouteState {
-  payment?: {
-    id: number;
-    amount: number;
-    date: string;
-    note?: string;
-  };
-  remaining: number;
-}
-
 const FormPaymentPage = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id, paymentId } = useParams();
   const location = useLocation();
 
-  const routeState = location.state as PaymentRouteState | null;
-  const isEdit = !!routeState?.payment;
-  const remaining = routeState?.remaining ?? 0;
+  const isEdit = !!paymentId;
+  const remaining =
+    (location.state as { remaining?: number } | null)?.remaining ?? 0;
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  // Fetch transaction detail to get payment data for edit
+  const { data: transaction } = useGet(
+    `/transaction/${id}`,
+    {},
+    { shouldFetch: isEdit, saveQuery: false },
+  ) as { data: ITransactionDetail | null };
+
+  const editPayment = transaction?.payments?.find(
+    (p: IPayment) => p.id === Number(paymentId),
+  );
 
   usePageTitle(isEdit ? 'Edit Pembayaran' : 'Tambah Pembayaran');
 
-  const maxAmount = isEdit
-    ? remaining + (routeState?.payment?.amount ?? 0)
-    : remaining;
+  const maxAmount = isEdit ? remaining + (editPayment?.amount ?? 0) : remaining;
 
   const {
     state,
@@ -62,15 +64,15 @@ const FormPaymentPage = () => {
   );
 
   useEffect(() => {
-    if (routeState?.payment) {
+    if (editPayment) {
       setFormState({
-        amount: routeState.payment.amount,
-        date: routeState.payment.date,
-        note: routeState.payment.note ?? '',
+        amount: editPayment.amount,
+        date: dayjs(editPayment.date).format('YYYY-MM-DD'),
+        note: editPayment.note ?? '',
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [editPayment]);
 
   const { handlePost, loadingPost } = usePost(`/transaction/${id}/payment`, {
     onSuccess: () => {
@@ -80,7 +82,7 @@ const FormPaymentPage = () => {
   });
 
   const { handlePut, loadingPut } = usePut(
-    `/transaction/${id}/payment/${routeState?.payment?.id}`,
+    `/transaction/${id}/payment/${paymentId}`,
     {
       onSuccess: () => {
         navigate(`/transaction/${id}`);
@@ -90,7 +92,7 @@ const FormPaymentPage = () => {
   );
 
   const { handleDelete, loadingDelete } = useDelete(
-    `/transaction/${id}/payment/${routeState?.payment?.id}`,
+    `/transaction/${id}/payment/${paymentId}`,
     {
       onSuccess: () => {
         navigate(`/transaction/${id}`);
@@ -100,7 +102,7 @@ const FormPaymentPage = () => {
 
   const handleFullPayment = () => {
     const fullAmount = isEdit
-      ? remaining + (routeState?.payment?.amount ?? 0)
+      ? remaining + (editPayment?.amount ?? 0)
       : remaining;
     setFieldValue('amount', fullAmount);
   };

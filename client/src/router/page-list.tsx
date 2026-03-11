@@ -39,10 +39,16 @@ const pageList = {
       component: lazy(() => import('@/pages/private/transaction/form')),
     },
     {
+      path: 'transaction/:id/edit',
+      component: lazy(() => import('@/pages/private/transaction/form')),
+    },
+    {
       path: 'transaction/:id/payment',
-      component: lazy(
-        () => import('@/pages/private/transaction/payment-form'),
-      ),
+      component: lazy(() => import('@/pages/private/transaction/payment-form')),
+    },
+    {
+      path: 'transaction/:id/payment/:paymentId/edit',
+      component: lazy(() => import('@/pages/private/transaction/payment-form')),
     },
   ],
   auth: [

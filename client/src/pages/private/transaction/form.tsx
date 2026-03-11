@@ -1,6 +1,9 @@
-import { useNavigate, useSearchParams } from 'react-router';
+import { useEffect } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 
 import type { TransactionType } from '@/types/commons';
+import type { ITransactionDetail } from '@/types/services';
+import dayjs from 'dayjs';
 
 import Button from '@/components/shared/button';
 import Input from '@/components/shared/input';
@@ -10,7 +13,7 @@ import Select from '@/components/shared/select';
 
 import useForm from '@/hooks/use-form';
 import { usePageTitle } from '@/hooks/use-page-header';
-import { useGet, usePost } from '@/hooks/use-services';
+import { useGet, usePost, usePut } from '@/hooks/use-services';
 
 import { TRANSACTION_STATUS, TRANSACTION_TYPES } from '@/libs/constants';
 
@@ -34,33 +37,70 @@ const typeOptions = [
 
 const FormTransactionPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [searchParams] = useSearchParams();
 
   const transaction_type = searchParams.get(
     'transaction_type',
   ) as TransactionType;
+  const isEdit = !!id;
 
-  const { state, errors, handleFormChange, setFieldValue, resetForm, isValid } =
-    useForm(
-      {
-        contact_id: null,
-        type: transaction_type || TRANSACTION_TYPES.DEBT,
-        status: TRANSACTION_STATUS.ACTIVE,
-        amount: 0,
-        date: '',
-        note: '',
-        due_date: '',
-      },
-      {
-        requiredFields: ['contact_id', 'type', 'amount', 'date', 'status'],
-        validators: {
-          note: [valid.max('Catatan', 64)],
-        },
-      },
-    );
+  const { data: editTransaction } = useGet(
+    `/transaction/${id}`,
+    {},
+    { shouldFetch: isEdit, saveQuery: false },
+  ) as { data: ITransactionDetail | null };
 
-  const titleLabel =
-    state.type === TRANSACTION_TYPES.DEBT ? 'Tambah Hutang' : 'Tambah Piutang';
+  const {
+    state,
+    errors,
+    handleFormChange,
+    setFieldValue,
+    setFormState,
+    resetForm,
+    isValid,
+  } = useForm(
+    {
+      contact_id: null as number | null,
+      type: transaction_type || TRANSACTION_TYPES.DEBT,
+      status: TRANSACTION_STATUS.ACTIVE,
+      amount: 0,
+      date: '',
+      note: '',
+      due_date: '',
+    },
+    {
+      requiredFields: ['contact_id', 'type', 'amount', 'date', 'status'],
+      validators: {
+        note: [valid.max('Catatan', 64)],
+      },
+    },
+  );
+
+  useEffect(() => {
+    if (editTransaction) {
+      setFormState({
+        contact_id: editTransaction.contact?.id,
+        type: editTransaction.type,
+        status: editTransaction.status as typeof TRANSACTION_STATUS.ACTIVE,
+        amount: editTransaction.amount,
+        date: dayjs(editTransaction.date).format('YYYY-MM-DD'),
+        note: editTransaction.note ?? '',
+        due_date: editTransaction.due_date
+          ? dayjs(editTransaction.due_date).format('YYYY-MM-DD')
+          : '',
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editTransaction]);
+
+  const titleLabel = isEdit
+    ? state.type === TRANSACTION_TYPES.DEBT
+      ? 'Edit Hutang'
+      : 'Edit Piutang'
+    : state.type === TRANSACTION_TYPES.DEBT
+      ? 'Tambah Hutang'
+      : 'Tambah Piutang';
   usePageTitle(titleLabel);
 
   const { data: contactData, refetch: refetchContact } = useGet('/contact');
@@ -73,6 +113,12 @@ const FormTransactionPage = () => {
   const { handlePost, loadingPost } = usePost('/transaction', {
     onSuccess: () => {
       navigate('/');
+      resetForm();
+    },
+  });
+  const { handlePut, loadingPut } = usePut(`/transaction/${id}`, {
+    onSuccess: () => {
+      navigate(`/transaction/${id}`);
       resetForm();
     },
   });
@@ -92,18 +138,29 @@ const FormTransactionPage = () => {
     handlePostContact({ name: v });
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!isValid) return;
+
+    const payload = removeEmptyFields({
+      ...state,
+      amount: Number(state.amount),
+    });
+
+    if (isEdit) {
+      await handlePut(payload, `/transaction/${id}`);
+    } else {
+      await handlePost(payload);
+    }
+  };
+
+  const loading = loadingPost || loadingPut;
+
   return (
     <form
       className="flex flex-col justify-between h-full"
-      onSubmit={async (e) => {
-        e.preventDefault();
-
-        if (!isValid) return;
-
-        state['amount'] = Number(state['amount']);
-
-        await handlePost(removeEmptyFields(state));
-      }}
+      onSubmit={handleSubmit}
     >
       <div className="flex flex-col gap-5">
         <RadioGroup
@@ -167,9 +224,9 @@ const FormTransactionPage = () => {
           type="submit"
           block
           disabled={!isValid || Number(state.amount) <= 0}
-          loading={loadingPost}
+          loading={loading}
         >
-          Simpan
+          {isEdit ? 'Simpan Perubahan' : 'Simpan'}
         </Button>
       </footer>
     </form>

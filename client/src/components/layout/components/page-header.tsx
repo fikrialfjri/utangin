@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 
-import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?react';
-
 import {
   usePageHeaderActionValue,
   usePageTitleValue,
 } from '@/hooks/use-page-header';
+
+import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?react';
 
 interface PageHeaderProps {
   title?: string;

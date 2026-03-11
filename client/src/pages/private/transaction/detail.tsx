@@ -49,19 +49,15 @@ const TransactionDetailPage = () => {
   );
 
   const navigateToPaymentForm = (payment?: IPayment) => {
-    navigate(`/form/transaction/${id}/payment`, {
-      state: {
-        remaining: transaction?.remaining ?? 0,
-        ...(payment && {
-          payment: {
-            id: payment.id,
-            amount: payment.amount,
-            date: dayjs(payment.date).format('YYYY-MM-DD'),
-            note: payment.note,
-          },
-        }),
-      },
-    });
+    if (payment) {
+      navigate(`/form/transaction/${id}/payment/${payment.id}/edit`, {
+        state: { remaining: transaction?.remaining ?? 0 },
+      });
+    } else {
+      navigate(`/form/transaction/${id}/payment`, {
+        state: { remaining: transaction?.remaining ?? 0 },
+      });
+    }
   };
 
   const actionItems = [
@@ -70,7 +66,7 @@ const TransactionDetailPage = () => {
       label: `Edit ${typeLabel}`,
       onClick: () => {
         setActionDrawerOpen(false);
-        // TODO: navigate to edit form
+        navigate(`/form/transaction/${id}/edit`);
       },
     },
     {
