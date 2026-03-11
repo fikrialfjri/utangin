@@ -6,12 +6,13 @@ import dayjs from 'dayjs';
 
 import Avatar from '@/components/shared/avatar';
 import BottomDrawer from '@/components/shared/bottom-drawer';
+import ConfirmDialog from '@/components/shared/confirm-dialog';
 import Empty from '@/components/shared/empty';
 import List from '@/components/shared/list';
 import PaymentProgressCard from '@/components/shared/payment-progress-card';
 
 import { usePageHeaderAction, usePageTitle } from '@/hooks/use-page-header';
-import { useGet } from '@/hooks/use-services';
+import { useDelete, useGet } from '@/hooks/use-services';
 
 import { TRANSACTION_TYPES } from '@/libs/constants';
 
@@ -28,10 +29,17 @@ const TransactionDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [actionDrawerOpen, setActionDrawerOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const { data: transaction } = useGet(`/transaction/${id}`) as {
     data: ITransactionDetail;
   };
+
+  const { handleDelete, loadingDelete } = useDelete(`/transaction/${id}`, {
+    onSuccess: () => {
+      navigate('/');
+    },
+  });
 
   const isDebt = transaction?.type === TRANSACTION_TYPES.DEBT;
   const typeLabel = isDebt ? 'Hutang' : 'Piutang';
@@ -83,7 +91,7 @@ const TransactionDetailPage = () => {
       danger: true,
       onClick: () => {
         setActionDrawerOpen(false);
-        // TODO: handle delete
+        setConfirmDeleteOpen(true);
       },
     },
   ];
@@ -207,6 +215,16 @@ const TransactionDetailPage = () => {
           ))}
         </div>
       </BottomDrawer>
+
+      <ConfirmDialog
+        isOpen={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={() => handleDelete()}
+        title={`Yakin ingin menghapus ${typeLabel.toLowerCase()} ini?`}
+        message="Semua data pembayaran yang terkait juga akan ikut terhapus."
+        confirmLabel="Ya, Hapus"
+        loading={loadingDelete}
+      />
     </div>
   );
 };
