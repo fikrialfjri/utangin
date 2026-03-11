@@ -5,7 +5,7 @@ import Input from '@/components/shared/input';
 import InputCurrency from '@/components/shared/input-currency';
 
 import useForm from '@/hooks/use-form';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/hooks/use-page-header';
 import { usePost } from '@/hooks/use-services';
 
 import { removeEmptyFields } from '@/utils/commons';

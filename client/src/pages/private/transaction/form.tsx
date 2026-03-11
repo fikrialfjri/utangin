@@ -9,7 +9,7 @@ import RadioGroup from '@/components/shared/radio-group';
 import Select from '@/components/shared/select';
 
 import useForm from '@/hooks/use-form';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/hooks/use-page-header';
 import { useGet, usePost } from '@/hooks/use-services';
 
 import { TRANSACTION_STATUS, TRANSACTION_TYPES } from '@/libs/constants';

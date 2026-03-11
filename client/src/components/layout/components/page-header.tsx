@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router';
 
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?react';
 
-import { usePageTitleValue } from '@/hooks/use-page-title';
+import {
+  usePageHeaderActionValue,
+  usePageTitleValue,
+} from '@/hooks/use-page-header';
 
 interface PageHeaderProps {
   title?: string;
@@ -14,7 +17,9 @@ interface PageHeaderProps {
 const PageHeader = ({ title, action, onBack }: PageHeaderProps) => {
   const navigate = useNavigate();
   const contextTitle = usePageTitleValue();
+  const contextAction = usePageHeaderActionValue();
   const displayTitle = title ?? contextTitle;
+  const displayAction = action ?? contextAction;
 
   const handleBack = () => {
     if (onBack) {
@@ -41,7 +46,7 @@ const PageHeader = ({ title, action, onBack }: PageHeaderProps) => {
         )}
       </div>
       <div className="w-8 h-8 flex items-center justify-center">
-        {action ?? null}
+        {displayAction ?? null}
       </div>
     </header>
   );

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import CheckCircleIcon from '@/assets/icons/check-circle.svg?react';
-import EditIcon from '@/assets/icons/edit.svg?react';
-
 import { formatCurrency, joinClassnames } from '@/utils/commons';
+
+import CheckCircleIcon from '@/assets/icons/check-circle.svg?react';
+import PaymentIcon from '@/assets/icons/payment.svg?react';
 
 interface PaymentProgressCardProps {
   label: string;
@@ -52,7 +52,7 @@ const PaymentProgressCard = ({
           onClick={onEdit}
           className="absolute top-4 right-4 flex items-center justify-center rounded-full p-1 cursor-pointer transition-opacity hover:opacity-70"
         >
-          <EditIcon className="w-4 h-4 text-primary" />
+          <PaymentIcon className="w-6 h-6 text-primary" />
         </button>
       )}
       <div className="flex flex-col items-center">

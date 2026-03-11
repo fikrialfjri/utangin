@@ -1,14 +1,16 @@
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 import type { IPayment, ITransactionDetail } from '@/types/services';
 import dayjs from 'dayjs';
 
 import Avatar from '@/components/shared/avatar';
+import BottomDrawer from '@/components/shared/bottom-drawer';
 import Empty from '@/components/shared/empty';
 import List from '@/components/shared/list';
 import PaymentProgressCard from '@/components/shared/payment-progress-card';
 
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageHeaderAction, usePageTitle } from '@/hooks/use-page-header';
 import { useGet } from '@/hooks/use-services';
 
 import { TRANSACTION_TYPES } from '@/libs/constants';
@@ -16,11 +18,16 @@ import { TRANSACTION_TYPES } from '@/libs/constants';
 import { formatCurrency } from '@/utils/commons';
 
 import DebtIcon from '@/assets/icons/debt.svg?react';
+import EditIcon from '@/assets/icons/edit.svg?react';
+import MoreVerticalIcon from '@/assets/icons/more-vertical.svg?react';
+import PaymentIcon from '@/assets/icons/payment.svg?react';
 import ReceivableIcon from '@/assets/icons/receivable.svg?react';
+import TrashIcon from '@/assets/icons/trash.svg?react';
 
 const TransactionDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { data: transaction } = useGet(`/transaction/${id}`) as {
     data: ITransactionDetail;
@@ -31,6 +38,43 @@ const TransactionDetailPage = () => {
   const remainLabel = isDebt ? 'Sisa Hutang' : 'Sisa Piutang';
 
   usePageTitle('Detail Transaksi');
+  usePageHeaderAction(
+    <button
+      type="button"
+      onClick={() => setDrawerOpen(true)}
+      className="flex items-center justify-center w-8 h-8 rounded-full cursor-pointer transition-opacity hover:opacity-70"
+    >
+      <MoreVerticalIcon className="w-5 h-5 text-shades-white" />
+    </button>,
+  );
+
+  const actionItems = [
+    {
+      icon: <EditIcon className="w-5 h-5" />,
+      label: `Edit ${typeLabel}`,
+      onClick: () => {
+        setDrawerOpen(false);
+        // TODO: navigate to edit form
+      },
+    },
+    {
+      icon: <PaymentIcon className="w-5 h-5" />,
+      label: 'Tambah Pembayaran',
+      onClick: () => {
+        setDrawerOpen(false);
+        navigate(`/form/transaction/${id}/payment`);
+      },
+    },
+    {
+      icon: <TrashIcon className="w-5 h-5" />,
+      label: `Hapus ${typeLabel}`,
+      danger: true,
+      onClick: () => {
+        setDrawerOpen(false);
+        // TODO: handle delete
+      },
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -55,7 +99,7 @@ const TransactionDetailPage = () => {
               </div>
             </div>
             <div className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-shades-white/15">
-              <div className="*:w-3.5 *:h-3.5 text-white">
+              <div className="*:w-4 *:h-4 text-white">
                 {isDebt ? <DebtIcon /> : <ReceivableIcon />}
               </div>
               <span className="typo-caption-sm font-semibold! text-shades-white">
@@ -124,6 +168,24 @@ const TransactionDetailPage = () => {
           />
         )}
       </section>
+
+      <BottomDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)}>
+        <div className="flex flex-col">
+          {actionItems.map((item) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={item.onClick}
+              className={`flex items-center gap-4 py-3.5 cursor-pointer transition-opacity hover:opacity-70 ${
+                item.danger ? 'text-danger' : 'text-neutral-2'
+              }`}
+            >
+              {item.icon}
+              <span className="typo-body-md font-medium!">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </BottomDrawer>
     </div>
   );
 };
