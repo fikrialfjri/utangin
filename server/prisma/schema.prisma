@@ -22,6 +22,7 @@ model User {
 
   contacts     Contact[]
   transactions Transaction[]
+  payments     Payment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -60,10 +61,30 @@ model Transaction {
   contact_id Int
   contact    Contact @relation(fields: [contact_id], references: [id])
 
+  payments Payment[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("transactions")
+}
+
+model Payment {
+  id     Int      @id @default(autoincrement())
+  amount Float
+  note   String?  @db.VarChar(255)
+  date   DateTime @default(now())
+
+  transaction_id Int
+  transaction    Transaction @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+
+  username String @db.VarChar(100)
+  user     User   @relation(fields: [username], references: [username])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payments")
 }
 
 enum TransactionType {

@@ -9,20 +9,31 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import {
   GroupedTransactionResponse,
+  TransactionDetailResponse,
   TransactionResponse,
 } from './responses/transaction.response';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { ContactService } from '../contact/contact.service';
 import { GetTransactionDto } from './dto/get-transaction.dto';
+import { CreatePaymentDto } from './dto/create-payment.dto';
 import dayjs from 'dayjs';
 
 const transactionInclude = {
   contact: true,
 } satisfies Prisma.TransactionInclude;
 
+const transactionDetailInclude = {
+  contact: true,
+  payments: { orderBy: { date: 'desc' } },
+} satisfies Prisma.TransactionInclude;
+
 type Transaction = Prisma.TransactionGetPayload<{
   include: typeof transactionInclude;
+}>;
+
+type TransactionDetail = Prisma.TransactionGetPayload<{
+  include: typeof transactionDetailInclude;
 }>;
 
 @Injectable()
@@ -150,9 +161,92 @@ export class TransactionService {
     };
   }
 
-  async findOne(username: string, id: number): Promise<TransactionResponse> {
-    const transaction = await this.checkTransactionMustExists(username, id);
-    return this.toTransactionResponse(transaction);
+  toTransactionDetailResponse(
+    transaction: TransactionDetail,
+  ): TransactionDetailResponse {
+    const base = this.toTransactionResponse(transaction as Transaction);
+
+    const total_paid = transaction.payments.reduce(
+      (sum, p) => sum + p.amount,
+      0,
+    );
+    const remaining = Math.max(transaction.amount - total_paid, 0);
+    const percentage =
+      transaction.amount > 0
+        ? Math.min(Math.round((total_paid / transaction.amount) * 100), 100)
+        : 0;
+
+    return {
+      ...base,
+      total_paid,
+      remaining,
+      percentage,
+      payments: transaction.payments.map((p) => ({
+        id: p.id,
+        amount: p.amount,
+        date: p.date,
+        ...(p.note && { note: p.note }),
+      })),
+    };
+  }
+
+  async findOne(
+    username: string,
+    id: number,
+  ): Promise<TransactionDetailResponse> {
+    const transaction = await this.prismaService.transaction.findFirst({
+      where: { username, id },
+      include: transactionDetailInclude,
+    });
+
+    if (!transaction) {
+      throw new NotFoundException('Transaksi tidak ditemukan');
+    }
+
+    return this.toTransactionDetailResponse(transaction);
+  }
+
+  async createPayment(
+    username: string,
+    transactionId: number,
+    reqBody: CreatePaymentDto,
+  ): Promise<TransactionDetailResponse> {
+    const transaction = await this.prismaService.transaction.findFirst({
+      where: { username, id: transactionId },
+      include: transactionDetailInclude,
+    });
+
+    if (!transaction) {
+      throw new NotFoundException('Transaksi tidak ditemukan');
+    }
+
+    await this.prismaService.payment.create({
+      data: {
+        username,
+        transaction_id: transactionId,
+        amount: reqBody.amount,
+        date: new Date(reqBody.date),
+        ...(reqBody.note && { note: reqBody.note }),
+      },
+    });
+
+    const totalPaid =
+      transaction.payments.reduce((sum, p) => sum + p.amount, 0) +
+      reqBody.amount;
+
+    if (totalPaid >= transaction.amount) {
+      await this.prismaService.transaction.update({
+        where: { id: transactionId },
+        data: { status: 'PAID' },
+      });
+    }
+
+    const updated = await this.prismaService.transaction.findFirst({
+      where: { username, id: transactionId },
+      include: transactionDetailInclude,
+    });
+
+    return this.toTransactionDetailResponse(updated!);
   }
 
   async update(

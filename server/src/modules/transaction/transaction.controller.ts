@@ -14,9 +14,11 @@ import {
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { CreatePaymentDto } from './dto/create-payment.dto';
 import { BaseResponse } from 'src/common/interfaces/base-response.interface';
 import {
   GroupedTransactionResponse,
+  TransactionDetailResponse,
   TransactionResponse,
 } from './responses/transaction.response';
 import { JwtAuthGuard } from 'src/common/auth/guards/logged-in.guard';
@@ -66,10 +68,26 @@ export class TransactionController {
   async findOne(
     @Req() req: Request & { user: { username: string } },
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<BaseResponse<TransactionResponse>> {
+  ): Promise<BaseResponse<TransactionDetailResponse>> {
     return {
       message: 'Data detail transaksi berhasil dimuat',
       data: await this.transactionService.findOne(req.user.username, id),
+    };
+  }
+
+  @Post(':id/payment')
+  async createPayment(
+    @Req() req: Request & { user: { username: string } },
+    @Param('id', ParseIntPipe) id: number,
+    @Body() reqBody: CreatePaymentDto,
+  ): Promise<BaseResponse<TransactionDetailResponse>> {
+    return {
+      message: 'Data pembayaran berhasil ditambahkan',
+      data: await this.transactionService.createPayment(
+        req.user.username,
+        id,
+        reqBody,
+      ),
     };
   }
 

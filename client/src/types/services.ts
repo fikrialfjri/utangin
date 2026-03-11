@@ -30,6 +30,8 @@ export interface ITransaction {
   amount: number;
   status: TransactionStatus;
   date: Date;
+  note?: string;
+  due_date?: Date;
   contact: IContact;
 }
 
@@ -41,4 +43,18 @@ export interface IGroupedTransaction {
   month: string;
   label: string;
   transactions: ITransaction[];
+}
+
+export interface IPayment {
+  id: number;
+  amount: number;
+  date: Date;
+  note?: string;
+}
+
+export interface ITransactionDetail extends ITransaction {
+  total_paid: number;
+  remaining: number;
+  percentage: number;
+  payments: IPayment[];
 }

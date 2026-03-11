@@ -72,17 +72,23 @@ const DebtPage = () => {
                 <List
                   data={dt.transactions}
                   renderItem={(item) => (
-                    <List.Item key={item.id} variant={item.type}>
-                      <List.Item.Meta
-                        avatar={{
-                          src: item.contact.avatar,
-                          name: item.contact.name,
-                        }}
-                        title={item.contact.name}
-                        description={dayjs(item.date).format('DD MMM YYYY')}
-                      />
-                      {formatCurrency(item.amount)}
-                    </List.Item>
+                    <div
+                      key={item.id}
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/transaction/${item.id}`)}
+                    >
+                      <List.Item variant={item.type}>
+                        <List.Item.Meta
+                          avatar={{
+                            src: item.contact.avatar,
+                            name: item.contact.name,
+                          }}
+                          title={item.contact.name}
+                          description={dayjs(item.date).format('DD MMM YYYY')}
+                        />
+                        {formatCurrency(item.amount)}
+                      </List.Item>
+                    </div>
                   )}
                 />
               </li>

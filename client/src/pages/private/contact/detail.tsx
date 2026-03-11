@@ -62,20 +62,26 @@ const ContactDetailPage = () => {
           <List
             data={contact.transactions}
             renderItem={(item: ITransaction) => (
-              <List.Item key={item.id} variant={item.type}>
-                <div className="flex flex-col">
-                  <h4 className="typo-body-md font-semibold! text-neutral-2">
-                    {dayjs(item.date).format('DD MMMM YYYY')}
-                  </h4>
-                  {item.status === 'PAID' && (
-                    <span className="typo-caption-sm text-neutral-3">
-                      Pembayaran terakhir:{' '}
-                      {dayjs(item.date).format('DD MMM YYYY')}
-                    </span>
-                  )}
-                </div>
-                {formatCurrency(item.amount)}
-              </List.Item>
+              <div
+                key={item.id}
+                className="cursor-pointer"
+                onClick={() => navigate(`/transaction/${item.id}`)}
+              >
+                <List.Item variant={item.type}>
+                  <div className="flex flex-col">
+                    <h4 className="typo-body-md font-semibold! text-neutral-2">
+                      {dayjs(item.date).format('DD MMMM YYYY')}
+                    </h4>
+                    {item.status === 'PAID' && (
+                      <span className="typo-caption-sm text-neutral-3">
+                        Pembayaran terakhir:{' '}
+                        {dayjs(item.date).format('DD MMM YYYY')}
+                      </span>
+                    )}
+                  </div>
+                  {formatCurrency(item.amount)}
+                </List.Item>
+              </div>
             )}
           />
         ) : null}
