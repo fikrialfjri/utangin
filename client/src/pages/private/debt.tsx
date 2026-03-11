@@ -4,6 +4,7 @@ import type { IDashboardSummary, IGroupedTransaction } from '@/types/services';
 import dayjs from 'dayjs';
 
 import Empty from '@/components/shared/empty';
+import FloatButton from '@/components/shared/float-button';
 import List from '@/components/shared/list';
 import SummaryCard from '@/components/shared/summary-card';
 
@@ -34,6 +35,13 @@ const DebtPage = () => {
     type: TRANSACTION_TYPES.DEBT,
   });
 
+  const handleNavigateTransaction = () => {
+    navigate({
+      pathname: '/form/transaction/create',
+      search: `transaction_type=${TRANSACTION_TYPES.DEBT}`,
+    });
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <SummaryCard
@@ -51,12 +59,7 @@ const DebtPage = () => {
         {!data?.length ? (
           <Empty
             variant={EMPTY_STATE_VARIANTS.DEBT}
-            onButtonClick={() =>
-              navigate({
-                pathname: '/form/transaction/create',
-                search: `transaction_type=${TRANSACTION_TYPES.DEBT}`,
-              })
-            }
+            onButtonClick={handleNavigateTransaction}
             showButton
           />
         ) : (
@@ -69,19 +72,23 @@ const DebtPage = () => {
                 <List
                   data={dt.transactions}
                   renderItem={(item) => (
-                    <List.Item key={item.id} variant={item.type}>
-                      <List.Item.Meta
-                        avatar={{
-                          src: item.contact.avatar,
-                          name: item.contact.name,
-                        }}
-                        title={item.contact.name}
-                        description={dayjs(item.contact.date).format(
-                          'DD MMM YYYY',
-                        )}
-                      />
-                      {formatCurrency(item.amount)}
-                    </List.Item>
+                    <div
+                      key={item.id}
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/transaction/${item.id}`)}
+                    >
+                      <List.Item variant={item.type}>
+                        <List.Item.Meta
+                          avatar={{
+                            src: item.contact.avatar,
+                            name: item.contact.name,
+                          }}
+                          title={item.contact.name}
+                          description={dayjs(item.date).format('DD MMM YYYY')}
+                        />
+                        {formatCurrency(item.amount)}
+                      </List.Item>
+                    </div>
                   )}
                 />
               </li>
@@ -89,6 +96,8 @@ const DebtPage = () => {
           </ul>
         )}
       </section>
+
+      <FloatButton onClick={handleNavigateTransaction} />
     </div>
   );
 };

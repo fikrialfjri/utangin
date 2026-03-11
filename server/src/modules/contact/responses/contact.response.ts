@@ -1,4 +1,4 @@
-import { TransactionType } from '@prisma/client';
+import { TransactionStatus, TransactionType } from '@prisma/client';
 
 export class GlobalContactResponse {
   id: number;
@@ -12,4 +12,18 @@ export class ContactResponse extends GlobalContactResponse {
   net_total: number;
   status?: TransactionType;
   last_transaction: Date;
+}
+
+export class ContactDetailTransactionResponse {
+  id: number;
+  type: TransactionType;
+  amount: number;
+  status: TransactionStatus;
+  date: Date;
+  note?: string;
+  due_date?: Date;
+}
+
+export class ContactDetailResponse extends ContactResponse {
+  transactions: ContactDetailTransactionResponse[];
 }

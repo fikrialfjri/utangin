@@ -17,6 +17,7 @@ import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { BaseResponse } from 'src/common/interfaces/base-response.interface';
 import {
+  ContactDetailResponse,
   ContactResponse,
   GlobalContactResponse,
 } from './responses/contact.response';
@@ -86,7 +87,7 @@ export class ContactController {
   async findOne(
     @Req() req: Request & { user: { username: string } },
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<BaseResponse<GlobalContactResponse>> {
+  ): Promise<BaseResponse<ContactDetailResponse>> {
     return {
       message: 'Data detail contact berhasil dimuat',
       data: await this.contactService.findOne(req.user.username, id),

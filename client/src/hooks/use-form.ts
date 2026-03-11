@@ -55,6 +55,11 @@ const useForm = <T extends Record<string, any>>(
     setErrors({});
   };
 
+  const setFormState = (newState: Partial<T>) => {
+    setState((prev) => ({ ...prev, ...newState }));
+    setErrors({});
+  };
+
   const isAllRequiredFilled = (state: T, requiredFields?: (keyof T)[]) => {
     if (!requiredFields || requiredFields.length === 0)
       return isAllFilled(state);
@@ -75,6 +80,7 @@ const useForm = <T extends Record<string, any>>(
     errors,
     handleFormChange,
     setFieldValue,
+    setFormState,
     resetForm,
     isValid,
   };
