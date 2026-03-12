@@ -7,6 +7,7 @@ import {
 } from '@/hooks/use-page-header';
 
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?react';
+import MoreVerticalIcon from '@/assets/icons/more-vertical.svg?react';
 
 interface PageHeaderProps {
   title?: string;
@@ -17,9 +18,8 @@ interface PageHeaderProps {
 const PageHeader = ({ title, action, onBack }: PageHeaderProps) => {
   const navigate = useNavigate();
   const contextTitle = usePageTitleValue();
-  const contextAction = usePageHeaderActionValue();
+  const onHeaderAction = usePageHeaderActionValue();
   const displayTitle = title ?? contextTitle;
-  const displayAction = action ?? contextAction;
 
   const handleBack = () => {
     if (onBack) {
@@ -28,6 +28,16 @@ const PageHeader = ({ title, action, onBack }: PageHeaderProps) => {
       navigate(-1);
     }
   };
+
+  const renderedAction = action ?? (onHeaderAction ? (
+    <button
+      type="button"
+      onClick={onHeaderAction}
+      className="flex items-center justify-center w-8 h-8 rounded-full cursor-pointer transition-opacity hover:opacity-70"
+    >
+      <MoreVerticalIcon className="w-5 h-5 text-shades-white" />
+    </button>
+  ) : null);
 
   return (
     <header className="flex items-center justify-between h-14 px-3 xs:px-6 bg-primary">
@@ -46,7 +56,7 @@ const PageHeader = ({ title, action, onBack }: PageHeaderProps) => {
         )}
       </div>
       <div className="w-8 h-8 flex items-center justify-center">
-        {displayAction ?? null}
+        {renderedAction}
       </div>
     </header>
   );

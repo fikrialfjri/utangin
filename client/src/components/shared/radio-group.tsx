@@ -75,7 +75,7 @@ const RadioGroup = ({
   const getColorClasses = (optionValue: string, isSelected?: boolean) => {
     if (!isSelected) {
       return {
-        text: 'text-neutral-1',
+        text: 'text-neutral-2',
         bg: '',
       };
     }

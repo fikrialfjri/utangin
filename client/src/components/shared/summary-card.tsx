@@ -37,6 +37,8 @@ interface IProps {
   titleClassName?: string;
   withoutRecentContacts?: boolean;
   contactInfo?: IContactInfo;
+  hideNominal?: boolean;
+  statusBadge?: ReactNode;
 }
 
 const SummaryCard = ({
@@ -49,6 +51,8 @@ const SummaryCard = ({
   titleClassName,
   withoutRecentContacts,
   contactInfo,
+  hideNominal,
+  statusBadge,
 }: IProps) => {
   const wrapperClassnames: StringMap = {
     POTENTIAL: 'bg-primary text-shades-white',
@@ -115,38 +119,50 @@ const SummaryCard = ({
           </div>
         </div>
       ) : null}
-      <div
-        className={joinClassnames([
-          'flex flex-col',
-          centered ? 'justify-center items-center' : 'items-start',
-        ])}
-      >
-        <div className="flex items-center gap-1">
-          <div className="*:w-3.5 *:h-3.5">{resolvedIcon}</div>
-          <label className="typo-body-md font-normal!">{resolvedLabel}</label>
-        </div>
-        <h3
+      {!hideNominal && (
+        <div
           className={joinClassnames([
-            'typo-headline-md font-bold!',
-            withColorValue
-              ? isMinusNumber(data?.nominal ?? 0) ||
-                contactInfo?.status === TRANSACTION_TYPES.DEBT
-                ? 'text-danger'
-                : isZeroNumber(data?.nominal ?? 0)
-                  ? ''
-                  : 'text-success'
-              : '',
-            titleClassName,
+            'flex flex-col',
+            centered ? 'justify-center items-center' : 'items-start',
           ])}
         >
-          {isMinusNumber(data?.nominal ?? 0) ||
-          contactInfo?.status === TRANSACTION_TYPES.DEBT
-            ? '-'
-            : ''}
-          Rp
-          {Math.abs(data?.nominal ?? 0)?.toLocaleString()}
-        </h3>
-      </div>
+          <div className="flex items-center gap-1">
+            <div className="*:w-3.5 *:h-3.5">{resolvedIcon}</div>
+            <label className="typo-body-md font-normal!">{resolvedLabel}</label>
+          </div>
+          <h3
+            className={joinClassnames([
+              'typo-headline-md font-bold!',
+              withColorValue
+                ? isMinusNumber(data?.nominal ?? 0) ||
+                  contactInfo?.status === TRANSACTION_TYPES.DEBT
+                  ? 'text-danger'
+                  : isZeroNumber(data?.nominal ?? 0)
+                    ? ''
+                    : 'text-success'
+                : '',
+              titleClassName,
+            ])}
+          >
+            {isMinusNumber(data?.nominal ?? 0) ||
+            contactInfo?.status === TRANSACTION_TYPES.DEBT
+              ? '-'
+              : ''}
+            Rp
+            {Math.abs(data?.nominal ?? 0)?.toLocaleString()}
+          </h3>
+        </div>
+      )}
+      {hideNominal && statusBadge && (
+        <div
+          className={joinClassnames([
+            'flex',
+            centered ? 'justify-center' : 'justify-start',
+          ])}
+        >
+          {statusBadge}
+        </div>
+      )}
       {!withoutRecentContacts &&
       (variant === TRANSACTION_TYPES.DEBT ||
         variant === TRANSACTION_TYPES.RECEIVABLE)

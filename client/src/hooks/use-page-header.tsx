@@ -5,22 +5,21 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 
 interface PageContextValue {
   title: string;
   setTitle: (title: string) => void;
-  headerAction: ReactNode;
-  setHeaderAction: (action: ReactNode) => void;
+  onHeaderAction: (() => void) | null;
+  setOnHeaderAction: (cb: (() => void) | null) => void;
 }
 
 const PageContext = createContext<PageContextValue>({
   title: '',
   setTitle: () => {},
-  headerAction: null,
-  setHeaderAction: () => {},
+  onHeaderAction: null,
+  setOnHeaderAction: () => {},
 });
 
 interface PageTitleProviderProps {
@@ -29,11 +28,13 @@ interface PageTitleProviderProps {
 
 export const PageTitleProvider = ({ children }: PageTitleProviderProps) => {
   const [title, setTitle] = useState('');
-  const [headerAction, setHeaderAction] = useState<ReactNode>(null);
+  const [onHeaderAction, setOnHeaderAction] = useState<(() => void) | null>(
+    null,
+  );
 
   const stableSetTitle = useCallback((t: string) => setTitle(t), []);
-  const stableSetHeaderAction = useCallback(
-    (a: ReactNode) => setHeaderAction(a),
+  const stableSetOnHeaderAction = useCallback(
+    (cb: (() => void) | null) => setOnHeaderAction(() => cb),
     [],
   );
 
@@ -41,10 +42,10 @@ export const PageTitleProvider = ({ children }: PageTitleProviderProps) => {
     () => ({
       title,
       setTitle: stableSetTitle,
-      headerAction,
-      setHeaderAction: stableSetHeaderAction,
+      onHeaderAction,
+      setOnHeaderAction: stableSetOnHeaderAction,
     }),
-    [title, headerAction, stableSetTitle, stableSetHeaderAction],
+    [title, onHeaderAction, stableSetTitle, stableSetOnHeaderAction],
   );
 
   return (
@@ -66,19 +67,17 @@ export const usePageTitleValue = () => {
   return title;
 };
 
-export const usePageHeaderAction = (action: ReactNode) => {
-  const { setHeaderAction } = useContext(PageContext);
-  const actionRef = useRef(action);
-  actionRef.current = action;
+export const usePageHeaderAction = (onAction: () => void) => {
+  const { setOnHeaderAction } = useContext(PageContext);
 
   useEffect(() => {
-    setHeaderAction(actionRef.current);
-    return () => setHeaderAction(null);
-  }, [setHeaderAction]);
+    setOnHeaderAction(onAction);
+    return () => setOnHeaderAction(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setOnHeaderAction]);
 };
 
 export const usePageHeaderActionValue = () => {
-  const { headerAction } = useContext(PageContext);
-  return headerAction;
+  const { onHeaderAction } = useContext(PageContext);
+  return onHeaderAction;
 };
-

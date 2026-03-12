@@ -4,6 +4,7 @@ import type { IDashboardSummary, IGroupedTransaction } from '@/types/services';
 import dayjs from 'dayjs';
 
 import Empty from '@/components/shared/empty';
+import Badge from '@/components/shared/badge';
 import FloatButton from '@/components/shared/float-button';
 import List from '@/components/shared/list';
 import SummaryCard from '@/components/shared/summary-card';
@@ -86,7 +87,20 @@ const DebtPage = () => {
                           title={item.contact.name}
                           description={dayjs(item.date).format('DD MMM YYYY')}
                         />
-                        {formatCurrency(item.amount)}
+                        <div className="flex flex-col items-end gap-0.5">
+                          <span
+                            className={
+                              item.status === 'PAID'
+                                ? 'line-through text-neutral-3'
+                                : ''
+                            }
+                          >
+                            {formatCurrency(item.amount)}
+                          </span>
+                          {item.status === 'PAID' && (
+                            <Badge variant="success">Lunas</Badge>
+                          )}
+                        </div>
                       </List.Item>
                     </div>
                   )}

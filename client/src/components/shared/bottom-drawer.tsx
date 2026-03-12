@@ -53,7 +53,7 @@ const BottomDrawer = ({
         </div>
         {title && (
           <div className="px-5 py-3">
-            <h3 className="typo-headline-lg font-semibold! text-neutral-1">
+            <h3 className="typo-headline-lg font-semibold! text-neutral-2">
               {title}
             </h3>
           </div>

@@ -224,6 +224,7 @@ const FormTransactionPage = () => {
           type="submit"
           disabled={!isValid || Number(state.amount) <= 0}
           loading={loading}
+          block
         >
           {isEdit ? 'Simpan Perubahan' : 'Simpan'}
         </Button>

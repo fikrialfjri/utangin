@@ -7,6 +7,7 @@ import { VARIANT_LABELS } from '@/libs/constants';
 
 import EmptyContact from '@/assets/illustrations/empty-contact.svg?react';
 import EmptyDebt from '@/assets/illustrations/empty-debt.svg?react';
+import EmptyDebtReceivable from '@/assets/illustrations/empty-debt-receivable.svg?react';
 import EmptyDefault from '@/assets/illustrations/empty-default.svg?react';
 import EmptyReceivable from '@/assets/illustrations/empty-receivable.svg?react';
 import EmptyTransaction from '@/assets/illustrations/empty-transaction.svg?react';
@@ -53,6 +54,11 @@ const Empty = ({
     ),
     CONTACT: (
       <EmptyContact
+        className={illustrationClassName || 'w-1/3 h-1/3 mx-auto mt-10'}
+      />
+    ),
+    DEBT_RECEIVABLE: (
+      <EmptyDebtReceivable
         className={illustrationClassName || 'w-1/3 h-1/3 mx-auto mt-10'}
       />
     ),

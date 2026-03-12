@@ -50,6 +50,14 @@ const pageList = {
       path: 'transaction/:id/payment/:paymentId/edit',
       component: lazy(() => import('@/pages/private/transaction/payment-form')),
     },
+    {
+      path: 'contact/create',
+      component: lazy(() => import('@/pages/private/contact/form')),
+    },
+    {
+      path: 'contact/:id/edit',
+      component: lazy(() => import('@/pages/private/contact/form')),
+    },
   ],
   auth: [
     {

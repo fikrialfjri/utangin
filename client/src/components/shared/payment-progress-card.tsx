@@ -12,6 +12,7 @@ interface PaymentProgressCardProps {
   amount: number;
   percentage: number;
   paymentCount: number;
+  transactionCount?: number;
   isDebt?: boolean;
   isPaid?: boolean;
   onEdit?: () => void;
@@ -24,6 +25,7 @@ const PaymentProgressCard = ({
   amount,
   percentage,
   paymentCount,
+  transactionCount,
   isDebt = true,
   isPaid = false,
   onEdit,
@@ -92,9 +94,16 @@ const PaymentProgressCard = ({
             {formatCurrency(amount)}
           </h5>
         </div>
-        <span className="typo-caption-md text-neutral-3">
-          {paymentCount} pembayaran
-        </span>
+        <div className="flex flex-col items-end">
+          {transactionCount !== undefined && (
+            <span className="typo-caption-md text-neutral-3">
+              {transactionCount} transaksi
+            </span>
+          )}
+          <span className="typo-caption-md text-neutral-3">
+            {paymentCount} pembayaran
+          </span>
+        </div>
       </div>
       <div className="h-3 w-full rounded-full bg-neutral-5 overflow-hidden">
         <div

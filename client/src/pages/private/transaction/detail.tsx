@@ -16,11 +16,10 @@ import { useDelete, useGet } from '@/hooks/use-services';
 
 import { TRANSACTION_TYPES } from '@/libs/constants';
 
-import { formatCurrency } from '@/utils/commons';
+import { formatCurrency, joinClassnames } from '@/utils/commons';
 
 import DebtIcon from '@/assets/icons/debt.svg?react';
 import EditIcon from '@/assets/icons/edit.svg?react';
-import MoreVerticalIcon from '@/assets/icons/more-vertical.svg?react';
 import PaymentIcon from '@/assets/icons/payment.svg?react';
 import ReceivableIcon from '@/assets/icons/receivable.svg?react';
 import TrashIcon from '@/assets/icons/trash.svg?react';
@@ -28,13 +27,13 @@ import TrashIcon from '@/assets/icons/trash.svg?react';
 const TransactionDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [actionDrawerOpen, setActionDrawerOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const { data: transaction } = useGet(`/transaction/${id}`) as {
     data: ITransactionDetail;
   };
-
   const { handleDelete, loadingDelete } = useDelete(`/transaction/${id}`, {
     onSuccess: () => {
       navigate('/');
@@ -46,15 +45,7 @@ const TransactionDetailPage = () => {
   const remainLabel = isDebt ? 'Sisa Hutang' : 'Sisa Piutang';
 
   usePageTitle('Detail Transaksi');
-  usePageHeaderAction(
-    <button
-      type="button"
-      onClick={() => setActionDrawerOpen(true)}
-      className="flex items-center justify-center w-8 h-8 rounded-full cursor-pointer transition-opacity hover:opacity-70"
-    >
-      <MoreVerticalIcon className="w-5 h-5 text-shades-white" />
-    </button>,
-  );
+  usePageHeaderAction(() => setActionDrawerOpen(true));
 
   const navigateToPaymentForm = (payment?: IPayment) => {
     if (payment) {
@@ -205,9 +196,10 @@ const TransactionDetailPage = () => {
               key={item.label}
               type="button"
               onClick={item.onClick}
-              className={`flex items-center gap-4 py-3.5 cursor-pointer transition-opacity hover:opacity-70 ${
-                item.danger ? 'text-danger' : 'text-neutral-2'
-              }`}
+              className={joinClassnames([
+                'flex items-center gap-4 py-3.5 cursor-pointer transition-opacity hover:opacity-70',
+                item.danger ? 'text-danger' : 'text-neutral-2',
+              ])}
             >
               {item.icon}
               <span className="typo-body-md font-medium!">{item.label}</span>

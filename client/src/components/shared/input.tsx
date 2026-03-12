@@ -75,7 +75,7 @@ const Input = ({
         htmlFor={id}
         className={joinClassnames([
           'inline-block typo-body-md font-medium mb-2 ml-2',
-          showError ? 'text-danger' : 'text-neutral-1',
+          showError ? 'text-danger' : 'text-neutral-2',
         ])}
       >
         {label}
@@ -104,7 +104,7 @@ const Input = ({
           value={value}
           onChange={handleInputChange}
           onBlur={handleBlur}
-          className="flex-1 typo-body-lg text-neutral-1 bg-transparent outline-none disabled:opacity-50 disabled:pointer-events-none"
+          className="flex-1 typo-body-lg text-neutral-2 bg-transparent outline-none disabled:opacity-50 disabled:pointer-events-none"
           {...rest}
         />
 

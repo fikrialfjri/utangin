@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dicebear/collection": "^9.4.0",
+    "@dicebear/core": "^9.4.0",
     "@tailwindcss/vite": "^4.1.16",
     "axios": "^1.13.2",
     "dayjs": "^1.11.19",

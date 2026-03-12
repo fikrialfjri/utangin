@@ -61,7 +61,7 @@ const ConfirmDialog = ({
       >
         <div className="flex flex-col gap-3">
           <div className="flex flex-col">
-            <h3 className="typo-headline-md font-semibold! text-neutral-1 text-center">
+            <h3 className="typo-headline-md font-semibold! text-neutral-2 text-center">
               {title}
             </h3>
             <p className="typo-caption-md text-neutral-2 text-center mt-2">

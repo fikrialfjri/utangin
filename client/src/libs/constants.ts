@@ -21,6 +21,7 @@ export const EMPTY_STATE_VARIANTS = {
   DEFAULT: 'DEFAULT',
   TRANSACTION: 'TRANSACTION',
   CONTACT: 'CONTACT',
+  DEBT_RECEIVABLE: 'DEBT_RECEIVABLE',
   ...TRANSACTION_TYPES,
 } as const;
 export const VARIANT_LABELS = {
@@ -28,6 +29,7 @@ export const VARIANT_LABELS = {
   DEBT: 'Utang',
   RECEIVABLE: 'Piutang',
   CONTACT: 'Kontak',
+  DEBT_RECEIVABLE: 'Hutang / Piutang',
 } as const;
 
 export const PASSWORD_RULES: {

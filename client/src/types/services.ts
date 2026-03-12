@@ -22,6 +22,8 @@ export interface IContact {
   net_total?: number;
   status?: TransactionType;
   last_transaction?: Date;
+  last_payment?: Date;
+  has_active_transactions?: boolean;
 }
 
 export interface ITransaction {
@@ -30,12 +32,19 @@ export interface ITransaction {
   amount: number;
   status: TransactionStatus;
   date: Date;
+  last_payment?: Date;
   note?: string;
   due_date?: Date;
   contact: IContact;
 }
 
 export interface IContactDetail extends IContact {
+  total_amount: number;
+  total_paid: number;
+  remaining: number;
+  percentage: number;
+  payment_count: number;
+  transaction_count: number;
   transactions: ITransaction[];
 }
 

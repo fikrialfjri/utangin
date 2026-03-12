@@ -11,7 +11,10 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 
 const contactInclude = {
   user: true,
-  transactions: { orderBy: { date: 'desc' } },
+  transactions: {
+    orderBy: { date: 'desc' as const },
+    include: { payments: { orderBy: { date: 'desc' as const } } },
+  },
 } satisfies Prisma.ContactInclude;
 
 type Contact = Prisma.ContactGetPayload<{ include: typeof contactInclude }>;
@@ -54,6 +57,19 @@ export class ContactService {
           ? TransactionType.RECEIVABLE
           : TransactionType.DEBT;
     const last_transaction = contact.transactions[0]?.date;
+    const has_active_transactions = contact.transactions.some(
+      (tx) => tx.status === 'ACTIVE',
+    );
+
+    const last_payment = contact.transactions.reduce<Date | undefined>(
+      (latest, tx) => {
+        const latestPayment = tx.payments[0]?.date;
+        if (!latestPayment) return latest;
+        if (!latest || latestPayment > latest) return latestPayment;
+        return latest;
+      },
+      undefined,
+    );
 
     const completeResponse = {
       ...basicResponse,
@@ -62,18 +78,41 @@ export class ContactService {
       net_total: Math.abs(net_total),
       status,
       last_transaction,
+      last_payment,
+      has_active_transactions,
     };
 
     if (variant === 'complete') return completeResponse;
 
+    const total_amount = contact.transactions.reduce(
+      (sum, tx) => sum + tx.amount,
+      0,
+    );
+    const total_paid = contact.transactions.reduce(
+      (sum, tx) =>
+        sum + tx.payments.reduce((pSum, p) => pSum + p.amount, 0),
+      0,
+    );
+    const payment_count = contact.transactions.reduce(
+      (sum, tx) => sum + tx.payments.length,
+      0,
+    );
+
     return {
       ...completeResponse,
+      total_amount,
+      total_paid,
+      remaining: total_amount - total_paid,
+      percentage: total_amount > 0 ? (total_paid / total_amount) * 100 : 0,
+      payment_count,
+      transaction_count: contact.transactions.length,
       transactions: contact.transactions.map((tx) => ({
         id: tx.id,
         type: tx.type,
         amount: tx.amount,
         status: tx.status,
         date: tx.date,
+        last_payment: tx.payments[0]?.date,
         ...(tx.note && { note: tx.note }),
         ...(tx.due_date && { due_date: tx.due_date }),
       })),

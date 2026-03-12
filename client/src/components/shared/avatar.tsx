@@ -1,18 +1,18 @@
 import type { StringMap } from '@/types/commons';
 import type { IContact } from '@/types/services';
 
-import { getColors } from '@/utils/colors';
-import { getInitials, joinClassnames } from '@/utils/commons';
+import { generateAvatar, joinClassnames } from '@/utils/commons';
 
 import { Image } from './image';
 
 const avatarSizes: StringMap = {
   small: 'w-6 h-6 text-[10px]',
   default: 'w-8 h-8 text-xs',
+  large: 'w-14 h-14 text-xl',
 };
 
 interface BaseProps {
-  size?: 'small' | 'default';
+  size?: 'small' | 'default' | 'large';
   className?: string;
 }
 
@@ -22,38 +22,20 @@ export interface IAvatarProps extends BaseProps {
 }
 
 const Avatar = ({ src, name, size = 'default', className }: IAvatarProps) => {
-  const initials = getInitials(name);
-  const { bgColor, textColor } = getColors(name);
   const sizeClass = avatarSizes[size];
-
-  if (src && src.length > 0) {
-    return (
-      <Image
-        className={joinClassnames([
-          'rounded-full aspect-auto',
-          sizeClass,
-          className,
-        ])}
-        src={src}
-        alt={`${name} avatar`}
-        loading="lazy"
-      />
-    );
-  }
+  const displaySrc = src && src.length > 0 ? src : generateAvatar(name);
 
   return (
-    <div
+    <Image
       className={joinClassnames([
-        'inline-flex items-center justify-center rounded-full select-none font-semibold',
-        bgColor,
-        textColor,
+        'rounded-full aspect-auto object-cover',
         sizeClass,
         className,
       ])}
-      aria-label={name}
-    >
-      {initials}
-    </div>
+      src={displaySrc}
+      alt={`${name} avatar`}
+      loading="lazy"
+    />
   );
 };
 

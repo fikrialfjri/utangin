@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { notionistsNeutral } from '@dicebear/collection';
+import { createAvatar } from '@dicebear/core';
+
 import type { ISelectOption, NavItem } from '@/types/commons';
 
 import { PASSWORD_RULES } from '@/libs/constants';
@@ -103,10 +106,19 @@ export const removeEmptyFields = <T extends Record<string, any>>(obj: T) => {
   };
 };
 
-export const getInitials = (name: string) => {
-  if (!name) return '?';
-  const parts = name.trim().split(/\s+/);
-  const first = parts[0]?.[0] ?? '';
-  const second = parts[1]?.[0] ?? '';
-  return (first + second).toUpperCase();
+export const generateAvatar = (seed: string) => {
+  const avatar = createAvatar(notionistsNeutral, {
+    seed,
+    backgroundColor: [
+      'f8d5b0',
+      'f5c5a3',
+      'e8b48a',
+      'd4956b',
+      'c68642',
+      'a56b3a',
+      '8d5524',
+      '6b3a2a',
+    ],
+  });
+  return avatar.toDataUri();
 };
