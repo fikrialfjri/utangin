@@ -105,7 +105,7 @@ const PaymentProgressCard = ({
           </span>
         </div>
       </div>
-      <div className="h-3 w-full rounded-full bg-neutral-5 overflow-hidden">
+      <div className="h-2 w-full rounded-full bg-neutral-6 overflow-hidden">
         <div
           className={joinClassnames([
             'h-full rounded-full transition-all duration-700 ease-out',

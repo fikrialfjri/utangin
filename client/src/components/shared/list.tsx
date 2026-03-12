@@ -16,7 +16,7 @@ interface IListProps {
   renderItem: RenderItemFn;
 }
 interface IListItemProps {
-  variant?: TransactionType;
+  variant?: TransactionType | 'PRIMARY';
   children: ReactNode;
   onClick?: () => void;
   withProgress?: boolean;
@@ -60,7 +60,7 @@ const List: ListComponent = ({ data, renderItem }) => {
 };
 
 const ListItem = ({
-  variant,
+  variant = 'PRIMARY',
   children,
   onClick,
   withProgress,
@@ -69,25 +69,33 @@ const ListItem = ({
   const wrapperClassnames: StringMap = {
     DEBT: 'text-danger!',
     RECEIVABLE: 'text-warning!',
+    PRIMARY: 'text-primary!',
   };
 
   return (
     <div
       className={joinClassnames([
         'typo-body-md font-bold! flex items-center justify-between gap-3 text-neutral-2 w-full h-full p-3 relative',
-        variant && wrapperClassnames[variant],
+        wrapperClassnames[variant],
         onClick && 'cursor-pointer',
       ])}
       onClick={onClick}
     >
       {children}
-      {withProgress && (percentage ?? 0) > 0 && (
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-transparent overflow-hidden">
-          <div className="h-full w-full bg-neutral-5" />
-          <div
-            className="absolute bottom-0 left-0 h-full bg-primary transition-all duration-500 ease-out"
-            style={{ width: `${percentage}%` }}
-          />
+
+      {withProgress && (
+        <div
+          className={joinClassnames([
+            'absolute bottom-0 left-0 w-full h-1 overflow-hidden',
+            percentage === 100 ? 'bg-success' : 'bg-neutral-5',
+          ])}
+        >
+          {percentage && percentage < 100 && (
+            <div
+              className="absolute bottom-0 left-0 h-full bg-primary transition-all duration-500 ease-out"
+              style={{ width: `${percentage}%` }}
+            />
+          )}
         </div>
       )}
     </div>

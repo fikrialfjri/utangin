@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router';
 
-import type { IDashboardSummary, IGroupedTransaction } from '@/types/services';
 import dayjs from 'dayjs';
+
+import type { IDashboardSummary, IGroupedTransaction } from '@/types/services';
 
 import Empty from '@/components/shared/empty';
 import FloatButton from '@/components/shared/float-button';
@@ -10,9 +11,11 @@ import SummaryCard from '@/components/shared/summary-card';
 
 import { useGet } from '@/hooks/use-services';
 
-import { EMPTY_STATE_VARIANTS, SUMMARY_CARD_VARIANTS } from '@/libs/constants';
-
-import { TRANSACTION_TYPES } from '@/libs/constants';
+import {
+  EMPTY_STATE_VARIANTS,
+  SUMMARY_CARD_VARIANTS,
+  TRANSACTION_TYPES,
+} from '@/libs/constants';
 
 interface IGetSummary {
   data: IDashboardSummary;
@@ -80,9 +83,7 @@ const HomePage = () => {
                     <List.Item
                       key={item.id}
                       variant={item.type}
-                      withProgress={
-                        item.status !== 'PAID' && item.total_paid > 0
-                      }
+                      withProgress
                       percentage={item.percentage}
                       onClick={() => navigate(`/transaction/${item.id}`)}
                     >

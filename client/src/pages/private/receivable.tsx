@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router';
 
-import type { IDashboardSummary, IGroupedTransaction } from '@/types/services';
 import dayjs from 'dayjs';
 
-import Empty from '@/components/shared/empty';
+import type { IDashboardSummary, IGroupedTransaction } from '@/types/services';
+
 import Badge from '@/components/shared/badge';
+import Empty from '@/components/shared/empty';
 import FloatButton from '@/components/shared/float-button';
 import List from '@/components/shared/list';
 import SummaryCard from '@/components/shared/summary-card';
@@ -76,9 +77,7 @@ const ReceivablePage = () => {
                     <List.Item
                       key={item.id}
                       variant={item.type}
-                      withProgress={
-                        item.status !== 'PAID' && item.total_paid > 0
-                      }
+                      withProgress
                       percentage={item.percentage}
                       onClick={() => navigate(`/transaction/${item.id}`)}
                     >

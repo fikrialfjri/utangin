@@ -129,34 +129,34 @@ const ContactDetailPage = () => {
             onButtonClick={handleNavigateTransaction}
           />
         ) : (
-            <List
-              data={contact.transactions}
-              renderItem={(item: ITransaction) => (
-                <List.Item
-                  key={item.id}
-                  variant={item.type}
-                  withProgress={item.status !== 'PAID' && item.total_paid > 0}
-                  percentage={item.percentage}
-                  onClick={() => navigate(`/transaction/${item.id}`)}
-                >
-                  <List.Item.Meta
-                    title={dayjs(item.date).format('DD MMMM YYYY')}
-                    description={
-                      item.last_payment
-                        ? `Pembayaran terakhir: ${dayjs(item.last_payment).format('DD MMM YYYY')}`
-                        : 'Belum ada pembayaran'
-                    }
-                  />
-                  <List.Item.TransactionNominal
-                    status={item.status}
-                    type={item.type}
-                    amount={item.amount}
-                    remaining={item.remaining}
-                    totalPaid={item.total_paid}
-                  />
-                </List.Item>
-              )}
-            />
+          <List
+            data={contact.transactions}
+            renderItem={(item: ITransaction) => (
+              <List.Item
+                key={item.id}
+                variant={item.type}
+                withProgress
+                percentage={item.percentage}
+                onClick={() => navigate(`/transaction/${item.id}`)}
+              >
+                <List.Item.Meta
+                  title={dayjs(item.date).format('DD MMMM YYYY')}
+                  description={
+                    item.last_payment
+                      ? `Pembayaran terakhir: ${dayjs(item.last_payment).format('DD MMM YYYY')}`
+                      : 'Belum ada pembayaran'
+                  }
+                />
+                <List.Item.TransactionNominal
+                  status={item.status}
+                  type={item.type}
+                  amount={item.amount}
+                  remaining={item.remaining}
+                  totalPaid={item.total_paid}
+                />
+              </List.Item>
+            )}
+          />
         )}
       </section>
 

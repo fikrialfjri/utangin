@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
-import type { IPayment, ITransactionDetail } from '@/types/services';
 import dayjs from 'dayjs';
+
+import type { IPayment, ITransactionDetail } from '@/types/services';
 
 import Avatar from '@/components/shared/avatar';
 import BottomDrawer from '@/components/shared/bottom-drawer';
@@ -99,13 +100,16 @@ const TransactionDetailPage = () => {
                 size="default"
               />
               <div className="flex-1">
-                <h4 className="typo-body-md font-semibold! text-shades-white">
+                <h4 className="typo-body-md font-bold! text-shades-white">
                   {transaction?.contact?.name}
                 </h4>
-                <p className="typo-caption-sm text-shades-white/60">
-                  {transaction?.date
-                    ? dayjs(transaction.date).format('DD MMM YYYY')
-                    : '-'}
+                <p className="typo-caption-sm text-shades-white/75">
+                  Tanggal Transaksi:{' '}
+                  <span className="font-semibold!">
+                    {transaction?.date
+                      ? dayjs(transaction.date).format('DD MMM YYYY')
+                      : '-'}
+                  </span>
                 </p>
               </div>
             </div>
@@ -119,7 +123,7 @@ const TransactionDetailPage = () => {
             </div>
           </div>
           {transaction?.note && (
-            <p className="typo-caption-md text-shades-white/60">
+            <p className="typo-caption-md text-shades-white/90">
               {transaction.note}
             </p>
           )}
@@ -152,7 +156,6 @@ const TransactionDetailPage = () => {
             renderItem={(item: IPayment) => (
               <List.Item
                 key={item.id}
-                variant={transaction.type}
                 onClick={() => navigateToPaymentForm(item)}
               >
                 <div className="flex flex-col">
