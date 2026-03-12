@@ -6,7 +6,6 @@ import dayjs from 'dayjs';
 import type { IContactDetail, ITransaction } from '@/types/services';
 
 import BottomDrawer from '@/components/shared/bottom-drawer';
-import Badge from '@/components/shared/badge';
 import ConfirmDialog from '@/components/shared/confirm-dialog';
 import Empty from '@/components/shared/empty';
 import FloatButton from '@/components/shared/float-button';
@@ -23,7 +22,7 @@ import {
   TRANSACTION_TYPES,
 } from '@/libs/constants';
 
-import { formatCurrency, joinClassnames } from '@/utils/commons';
+import { joinClassnames } from '@/utils/commons';
 
 import EditIcon from '@/assets/icons/edit.svg?react';
 import TrashIcon from '@/assets/icons/trash.svg?react';
@@ -47,7 +46,7 @@ const ContactDetailPage = () => {
   usePageTitle('Detail Kontak');
   usePageHeaderAction(() => setActionDrawerOpen(true));
 
-  const hasTransactions = !!(contact?.transactions?.length);
+  const hasTransactions = !!contact?.transactions?.length;
   const isLunas = hasTransactions && !contact?.has_active_transactions;
   const statusLabel =
     contact?.status === TRANSACTION_TYPES.DEBT ? 'Hutang' : 'Piutang';
@@ -130,43 +129,34 @@ const ContactDetailPage = () => {
             onButtonClick={handleNavigateTransaction}
           />
         ) : (
-          <List
-            data={contact.transactions}
-            renderItem={(item: ITransaction) => (
-              <div
-                key={item.id}
-                className="cursor-pointer"
-                onClick={() => navigate(`/transaction/${item.id}`)}
-              >
-                <List.Item variant={item.type}>
-                  <div className="flex flex-col">
-                    <h4 className="typo-body-md font-semibold! text-neutral-2">
-                      {dayjs(item.date).format('DD MMMM YYYY')}
-                    </h4>
-                    <span className="typo-caption-sm text-neutral-3">
-                      {item.last_payment
+            <List
+              data={contact.transactions}
+              renderItem={(item: ITransaction) => (
+                <List.Item
+                  key={item.id}
+                  variant={item.type}
+                  withProgress={item.status !== 'PAID' && item.total_paid > 0}
+                  percentage={item.percentage}
+                  onClick={() => navigate(`/transaction/${item.id}`)}
+                >
+                  <List.Item.Meta
+                    title={dayjs(item.date).format('DD MMMM YYYY')}
+                    description={
+                      item.last_payment
                         ? `Pembayaran terakhir: ${dayjs(item.last_payment).format('DD MMM YYYY')}`
-                        : 'Belum ada pembayaran'}
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-end gap-0.5">
-                    <span
-                      className={
-                        item.status === 'PAID'
-                          ? 'line-through text-neutral-3'
-                          : ''
-                      }
-                    >
-                      {formatCurrency(item.amount)}
-                    </span>
-                    {item.status === 'PAID' && (
-                      <Badge variant="success">Lunas</Badge>
-                    )}
-                  </div>
+                        : 'Belum ada pembayaran'
+                    }
+                  />
+                  <List.Item.TransactionNominal
+                    status={item.status}
+                    type={item.type}
+                    amount={item.amount}
+                    remaining={item.remaining}
+                    totalPaid={item.total_paid}
+                  />
                 </List.Item>
-              </div>
-            )}
-          />
+              )}
+            />
         )}
       </section>
 

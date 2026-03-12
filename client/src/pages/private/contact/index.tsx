@@ -82,25 +82,24 @@ const ContactPage = () => {
               <List
                 data={activeContacts}
                 renderItem={(item: IContact, idx: number) => (
-                  <List.Item key={item.id ?? idx} variant={item.status}>
-                    <div
-                      className="flex flex-1 cursor-pointer items-center justify-between gap-3"
-                      onClick={() => navigate(`/contact/${item.id}`)}
-                    >
-                      <List.Item.Meta
-                        avatar={{
-                          src: item.avatar,
-                          name: item.name,
-                        }}
-                        title={item.name}
-                        description={
-                          item.last_transaction
-                            ? `Transaksi terakhir: ${dayjs(item.last_transaction).format('DD MMM YYYY')} (${getTransactionLabel(item.status)})`
-                            : undefined
-                        }
-                      />
-                      {formatCurrency(item.net_total ?? 0)}
-                    </div>
+                  <List.Item
+                    key={item.id ?? idx}
+                    variant={item.status}
+                    onClick={() => navigate(`/contact/${item.id}`)}
+                  >
+                    <List.Item.Meta
+                      avatar={{
+                        src: item.avatar,
+                        name: item.name,
+                      }}
+                      title={item.name}
+                      description={
+                        item.last_transaction
+                          ? `Transaksi terakhir: ${dayjs(item.last_transaction).format('DD MMM YYYY')} (${getTransactionLabel(item.status)})`
+                          : undefined
+                      }
+                    />
+                    {formatCurrency(item.net_total ?? 0)}
                   </List.Item>
                 )}
               />
@@ -113,27 +112,27 @@ const ContactPage = () => {
                 <List
                   data={inactiveContacts}
                   renderItem={(item: IContact, idx: number) => (
-                    <List.Item key={item.id ?? idx}>
-                      <div
-                        className="flex flex-1 cursor-pointer items-center justify-between gap-3"
-                        onClick={() => navigate(`/contact/${item.id}`)}
-                      >
-                        <List.Item.Meta
-                          avatar={{
-                            src: item.avatar,
-                            name: item.name,
-                          }}
-                          title={item.name}
-                          description={
-                            item.last_transaction
-                              ? `Transaksi terakhir: ${dayjs(item.last_transaction).format('DD MMM YYYY')} (${getTransactionLabel(item.status)})`
-                              : 'Belum ada transaksi'
-                          }
-                        />
-                        {item.last_transaction && (
-                          <Badge variant="success">Lunas</Badge>
-                        )}
-                      </div>
+                    <List.Item
+                      key={item.id ?? idx}
+                      onClick={() => navigate(`/contact/${item.id}`)}
+                    >
+                      <List.Item.Meta
+                        avatar={{
+                          src: item.avatar,
+                          name: item.name,
+                        }}
+                        title={item.name}
+                        description={
+                          item.last_transaction
+                            ? `Transaksi terakhir: ${dayjs(item.last_transaction).format('DD MMM YYYY')} (${getTransactionLabel(item.status)})`
+                            : 'Belum ada transaksi'
+                        }
+                      />
+                      {item.last_transaction && (
+                        <Badge variant="success" size="xs">
+                          Lunas
+                        </Badge>
+                      )}
                     </List.Item>
                   )}
                 />

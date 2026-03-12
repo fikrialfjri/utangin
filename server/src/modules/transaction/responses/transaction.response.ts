@@ -10,13 +10,13 @@ export class TransactionResponse {
   date: Date;
   note?: string;
   due_date?: Date;
+  total_paid: number;
+  remaining: number;
+  percentage: number;
   contact: GlobalContactResponse;
 }
 
 export class TransactionDetailResponse extends TransactionResponse {
-  total_paid: number;
-  remaining: number;
-  percentage: number;
   payments: PaymentResponse[];
 }
 

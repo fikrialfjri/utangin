@@ -25,6 +25,9 @@ export class ContactDetailTransactionResponse {
   last_payment?: Date;
   note?: string;
   due_date?: Date;
+  total_paid: number;
+  remaining: number;
+  percentage: number;
 }
 
 export class ContactDetailResponse extends ContactResponse {

@@ -106,16 +106,23 @@ export class ContactService {
       percentage: total_amount > 0 ? (total_paid / total_amount) * 100 : 0,
       payment_count,
       transaction_count: contact.transactions.length,
-      transactions: contact.transactions.map((tx) => ({
-        id: tx.id,
-        type: tx.type,
-        amount: tx.amount,
-        status: tx.status,
-        date: tx.date,
-        last_payment: tx.payments[0]?.date,
-        ...(tx.note && { note: tx.note }),
-        ...(tx.due_date && { due_date: tx.due_date }),
-      })),
+      transactions: contact.transactions.map((tx) => {
+        const _total_paid = tx.payments.reduce((sum, p) => sum + p.amount, 0);
+        return {
+          id: tx.id,
+          type: tx.type,
+          amount: tx.amount,
+          status: tx.status,
+          date: tx.date,
+          last_payment: tx.payments[0]?.date,
+          ...(tx.note && { note: tx.note }),
+          ...(tx.due_date && { due_date: tx.due_date }),
+          total_paid: _total_paid,
+          remaining: Math.max(tx.amount - _total_paid, 0),
+          percentage:
+            tx.amount > 0 ? (_total_paid / tx.amount) * 100 : 0,
+        };
+      }),
     };
   }
 

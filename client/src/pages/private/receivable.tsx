@@ -73,36 +73,31 @@ const ReceivablePage = () => {
                 <List
                   data={dt.transactions}
                   renderItem={(item) => (
-                    <div
+                    <List.Item
                       key={item.id}
-                      className="cursor-pointer"
+                      variant={item.type}
+                      withProgress={
+                        item.status !== 'PAID' && item.total_paid > 0
+                      }
+                      percentage={item.percentage}
                       onClick={() => navigate(`/transaction/${item.id}`)}
                     >
-                      <List.Item variant={item.type}>
-                        <List.Item.Meta
-                          avatar={{
-                            src: item.contact.avatar,
-                            name: item.contact.name,
-                          }}
-                          title={item.contact.name}
-                          description={dayjs(item.date).format('DD MMM YYYY')}
-                        />
-                        <div className="flex flex-col items-end gap-0.5">
-                          <span
-                            className={
-                              item.status === 'PAID'
-                                ? 'line-through text-neutral-3'
-                                : ''
-                            }
-                          >
-                            {formatCurrency(item.amount)}
-                          </span>
-                          {item.status === 'PAID' && (
-                            <Badge variant="success">Lunas</Badge>
-                          )}
-                        </div>
-                      </List.Item>
-                    </div>
+                      <List.Item.Meta
+                        avatar={{
+                          src: item.contact.avatar,
+                          name: item.contact.name,
+                        }}
+                        title={item.contact.name}
+                        description={dayjs(item.date).format('DD MMM YYYY')}
+                      />
+                      <List.Item.TransactionNominal
+                        status={item.status}
+                        type={item.type}
+                        amount={item.amount}
+                        remaining={item.remaining}
+                        totalPaid={item.total_paid}
+                      />
+                    </List.Item>
                   )}
                 />
               </li>

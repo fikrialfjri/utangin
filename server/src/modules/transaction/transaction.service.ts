@@ -22,6 +22,7 @@ import dayjs from 'dayjs';
 
 const transactionInclude = {
   contact: true,
+  payments: true,
 } satisfies Prisma.TransactionInclude;
 
 const transactionDetailInclude = {
@@ -46,6 +47,16 @@ export class TransactionService {
   ) {}
 
   toTransactionResponse(transaction: Transaction): TransactionResponse {
+    const total_paid = transaction.payments?.reduce(
+      (sum, p) => sum + p.amount,
+      0,
+    ) ?? 0;
+    const remaining = Math.max(transaction.amount - total_paid, 0);
+    const percentage =
+      transaction.amount > 0
+        ? Math.min(Math.round((total_paid / transaction.amount) * 100), 100)
+        : 0;
+
     return {
       id: transaction.id,
       type: transaction.type,
@@ -54,6 +65,9 @@ export class TransactionService {
       date: transaction.date,
       ...(transaction.note && { note: transaction.note }),
       ...(transaction.due_date && { due_date: transaction.due_date }),
+      total_paid,
+      remaining,
+      percentage,
       contact: {
         id: transaction.contact.id,
         name: transaction.contact.name,
@@ -165,23 +179,10 @@ export class TransactionService {
   toTransactionDetailResponse(
     transaction: TransactionDetail,
   ): TransactionDetailResponse {
-    const base = this.toTransactionResponse(transaction as Transaction);
-
-    const total_paid = transaction.payments.reduce(
-      (sum, p) => sum + p.amount,
-      0,
-    );
-    const remaining = Math.max(transaction.amount - total_paid, 0);
-    const percentage =
-      transaction.amount > 0
-        ? Math.min(Math.round((total_paid / transaction.amount) * 100), 100)
-        : 0;
+    const base = this.toTransactionResponse(transaction as unknown as Transaction);
 
     return {
       ...base,
-      total_paid,
-      remaining,
-      percentage,
       payments: transaction.payments.map((p) => ({
         id: p.id,
         amount: p.amount,

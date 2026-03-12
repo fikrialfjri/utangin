@@ -35,6 +35,9 @@ export interface ITransaction {
   last_payment?: Date;
   note?: string;
   due_date?: Date;
+  total_paid: number;
+  remaining: number;
+  percentage: number;
   contact: IContact;
 }
 
@@ -62,8 +65,5 @@ export interface IPayment {
 }
 
 export interface ITransactionDetail extends ITransaction {
-  total_paid: number;
-  remaining: number;
-  percentage: number;
   payments: IPayment[];
 }

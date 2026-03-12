@@ -17,14 +17,14 @@
 
   /* Neutral */
   --color-neutral-1: #0e0e11;
-  --color-neutral-2: #3e3e4e;
+  --color-neutral-2: #343442;
   --color-neutral-3: #595a70;
   --color-neutral-4: #8c8ea4;
-  --color-neutral-5: #d7d8e0;
-  --color-neutral-6: #f7f7f8;
+  --color-neutral-5: #eef0f5;
+  --color-neutral-6: #f9fafb;
 
   /* Success */
-  --color-success-50: #daf9ec;
+  --color-success-50: #ecfdf5;
   --color-success-100: #74efb9;
   --color-success-300: #06a561;
   --color-success: var(--color-success-300);
@@ -36,7 +36,7 @@
   --color-warning: var(--color-warning-300);
 
   /* Danger */
-  --color-danger-50: #fde7ea;
+  --color-danger-50: #fff1f2;
   --color-danger-100: #f8919d;
   --color-danger-300: #f0142f;
   --color-danger: var(--color-danger-300);
@@ -46,17 +46,10 @@
   --color-shades-black: #121212;
 
   /* Shadow */
-  --shadow-primary-1:
-    0 4px 6px -4px rgb(94, 55, 246, 0.12), 0 8px 8px -4px rgb(94, 55, 246, 0.08);
-  --shadow-primary-2:
-    0 6px 12px -6px rgb(94, 55, 246, 0.12),
-    0 8px 24px -4px rgb(94, 55, 246, 0.08);
-  --shadow-primary-3:
-    0 8px 18px -6px rgb(94, 55, 246, 0.12),
-    0 12px 42px -4px rgb(94, 55, 246, 0.12);
-  --shadow-primary-4:
-    0 8px 28px -6px rgb(94, 55, 246, 0.12),
-    0 18px 88px -4px rgb(94, 55, 246, 0.14);
+  --shadow-primary-1: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-primary-2: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-primary-3: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-primary-4: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 
   /* Breakpoint */
   --breakpoint-xs: 36rem;
