@@ -94,14 +94,16 @@ export class ContactService {
 
     const computeProgress = (type: TransactionType) => {
       const filtered = contact.transactions.filter((tx) => tx.type === type);
-      const activeTxns = filtered.filter((tx) => tx.status === 'ACTIVE');
+      const targetTxns = filtered.filter((tx) =>
+        statusFilter ? tx.status === statusFilter : true,
+      );
 
-      const total_amount = activeTxns.reduce((sum, tx) => sum + tx.amount, 0);
-      const total_paid = activeTxns.reduce(
+      const total_amount = targetTxns.reduce((sum, tx) => sum + tx.amount, 0);
+      const total_paid = targetTxns.reduce(
         (sum, tx) => sum + tx.payments.reduce((pSum, p) => pSum + p.amount, 0),
         0,
       );
-      const payment_count = activeTxns.reduce(
+      const payment_count = targetTxns.reduce(
         (sum, tx) => sum + tx.payments.length,
         0,
       );
@@ -111,10 +113,11 @@ export class ContactService {
         total_paid,
         remaining: Math.max(total_amount - total_paid, 0),
         percentage: total_amount > 0 ? (total_paid / total_amount) * 100 : 0,
-        transaction_count: activeTxns.length,
+        transaction_count: targetTxns.length,
         payment_count,
         is_paid:
-          filtered.length > 0 && filtered.every((tx) => tx.status === 'PAID'),
+          targetTxns.length > 0 &&
+          targetTxns.every((tx) => tx.status === 'PAID'),
         has_data: filtered.length > 0,
       };
     };

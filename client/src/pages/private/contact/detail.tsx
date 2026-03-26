@@ -53,14 +53,16 @@ const ContactDetailPage = () => {
   usePageHeaderAction(() => setActionDrawerOpen(true));
 
   const hasTransactions = !!contact?.transactions?.length;
-  const isLunas = hasTransactions && !contact?.has_active_transactions;
+  const hasAnyTransactions =
+    contact?.debt_progress?.has_data || contact?.receivable_progress?.has_data;
+  const isLunas = hasAnyTransactions && !contact?.has_active_transactions;
   const statusLabel =
     contact?.status === TRANSACTION_TYPES.DEBT ? 'Hutang' : 'Piutang';
 
   const getContactDescription = () => {
     if (contact?.last_payment)
       return `Pembayaran terakhir: ${dayjs(contact.last_payment).format('DD MMM YYYY')} (${statusLabel})`;
-    if (hasTransactions) return 'Belum ada pembayaran';
+    if (hasAnyTransactions) return 'Belum ada pembayaran';
     return undefined;
   };
 
@@ -96,7 +98,7 @@ const ContactDetailPage = () => {
       <SummaryCard
         variant={SUMMARY_CARD_VARIANTS.CONTACT_DETAIL}
         data={{ nominal: contact?.net_total ?? 0 }}
-        withColorValue={hasTransactions && !isLunas}
+        withColorValue={hasAnyTransactions && !isLunas}
         centered
         withShadow
         titleClassName="typo-title-sm font-bold!"
@@ -121,7 +123,7 @@ const ContactDetailPage = () => {
           <h2 className="typo-headline-md font-bold! text-neutral-2">
             List Hutang / Piutang
           </h2>
-          {hasTransactions && (
+          {hasAnyTransactions && (
             <Switch
               label="Sembunyikan Transaksi Lunas"
               checked={localHidePaid}
