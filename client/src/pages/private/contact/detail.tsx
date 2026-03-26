@@ -10,7 +10,7 @@ import ConfirmDialog from '@/components/shared/confirm-dialog';
 import Empty from '@/components/shared/empty';
 import FloatButton from '@/components/shared/float-button';
 import List from '@/components/shared/list';
-import PaymentProgressCard from '@/components/shared/payment-progress-card';
+import { PaymentProgress } from '@/components/shared/payment-progress-card';
 import SummaryCard from '@/components/shared/summary-card';
 
 import { usePageHeaderAction, usePageTitle } from '@/hooks/use-page-header';
@@ -103,17 +103,10 @@ const ContactDetailPage = () => {
         }}
       />
 
-      {hasTransactions && (
-        <PaymentProgressCard
-          label={statusLabel ? `Sisa ${statusLabel}` : 'Sisa Keseluruhan'}
-          remaining={contact.remaining ?? 0}
-          totalPaid={contact.total_paid ?? 0}
-          amount={contact.total_amount ?? 0}
-          percentage={contact.percentage ?? 0}
-          paymentCount={contact.payment_count ?? 0}
-          transactionCount={contact.transaction_count ?? 0}
-          isDebt={contact.status === TRANSACTION_TYPES.DEBT}
-          isPaid={isLunas}
+      {contact && (
+        <PaymentProgress
+          debtProgress={contact.debt_progress}
+          receivableProgress={contact.receivable_progress}
         />
       )}
 
@@ -142,9 +135,8 @@ const ContactDetailPage = () => {
                 <List.Item.Meta
                   title={dayjs(item.date).format('DD MMMM YYYY')}
                   description={
-                    item.last_payment
-                      ? `Pembayaran terakhir: ${dayjs(item.last_payment).format('DD MMM YYYY')}`
-                      : 'Belum ada pembayaran'
+                    item.last_payment &&
+                    `Pembayaran terakhir: ${dayjs(item.last_payment).format('DD MMM YYYY')}`
                   }
                 />
                 <List.Item.TransactionNominal
@@ -162,7 +154,6 @@ const ContactDetailPage = () => {
 
       <FloatButton onClick={handleNavigateTransaction} withBottomNav={false} />
 
-      {/* Action Drawer */}
       <BottomDrawer
         isOpen={actionDrawerOpen}
         onClose={() => setActionDrawerOpen(false)}

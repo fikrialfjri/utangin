@@ -41,9 +41,12 @@ export class ContactService {
 
     const { total_debt, total_receivable } = contact.transactions.reduce(
       (acc, tx) => {
-        if (tx.type === TransactionType.DEBT) acc.total_debt += tx.amount;
+        if (tx.status !== 'ACTIVE') return acc;
+        const paid = tx.payments.reduce((sum, p) => sum + p.amount, 0);
+        const remaining = tx.amount - paid;
+        if (tx.type === TransactionType.DEBT) acc.total_debt += remaining;
         if (tx.type === TransactionType.RECEIVABLE)
-          acc.total_receivable += tx.amount;
+          acc.total_receivable += remaining;
         return acc;
       },
       { total_debt: 0, total_receivable: 0 },
@@ -84,28 +87,38 @@ export class ContactService {
 
     if (variant === 'complete') return completeResponse;
 
-    const total_amount = contact.transactions.reduce(
-      (sum, tx) => sum + tx.amount,
-      0,
-    );
-    const total_paid = contact.transactions.reduce(
-      (sum, tx) =>
-        sum + tx.payments.reduce((pSum, p) => pSum + p.amount, 0),
-      0,
-    );
-    const payment_count = contact.transactions.reduce(
-      (sum, tx) => sum + tx.payments.length,
-      0,
-    );
+    const computeProgress = (type: TransactionType) => {
+      const filtered = contact.transactions.filter((tx) => tx.type === type);
+      const activeTxns = filtered.filter((tx) => tx.status === 'ACTIVE');
+
+      const total_amount = activeTxns.reduce((sum, tx) => sum + tx.amount, 0);
+      const total_paid = activeTxns.reduce(
+        (sum, tx) =>
+          sum + tx.payments.reduce((pSum, p) => pSum + p.amount, 0),
+        0,
+      );
+      const payment_count = activeTxns.reduce(
+        (sum, tx) => sum + tx.payments.length,
+        0,
+      );
+
+      return {
+        total_amount,
+        total_paid,
+        remaining: Math.max(total_amount - total_paid, 0),
+        percentage: total_amount > 0 ? (total_paid / total_amount) * 100 : 0,
+        transaction_count: activeTxns.length,
+        payment_count,
+        is_paid:
+          filtered.length > 0 && filtered.every((tx) => tx.status === 'PAID'),
+        has_data: filtered.length > 0,
+      };
+    };
 
     return {
       ...completeResponse,
-      total_amount,
-      total_paid,
-      remaining: total_amount - total_paid,
-      percentage: total_amount > 0 ? (total_paid / total_amount) * 100 : 0,
-      payment_count,
-      transaction_count: contact.transactions.length,
+      debt_progress: computeProgress(TransactionType.DEBT),
+      receivable_progress: computeProgress(TransactionType.RECEIVABLE),
       transactions: contact.transactions.map((tx) => {
         const _total_paid = tx.payments.reduce((sum, p) => sum + p.amount, 0);
         return {

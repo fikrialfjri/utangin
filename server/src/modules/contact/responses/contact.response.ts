@@ -30,12 +30,19 @@ export class ContactDetailTransactionResponse {
   percentage: number;
 }
 
-export class ContactDetailResponse extends ContactResponse {
+export class TransactionProgressResponse {
   total_amount: number;
   total_paid: number;
   remaining: number;
   percentage: number;
-  payment_count: number;
   transaction_count: number;
+  payment_count: number;
+  is_paid: boolean;
+  has_data: boolean;
+}
+
+export class ContactDetailResponse extends ContactResponse {
+  debt_progress: TransactionProgressResponse;
+  receivable_progress: TransactionProgressResponse;
   transactions: ContactDetailTransactionResponse[];
 }

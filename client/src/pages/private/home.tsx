@@ -14,7 +14,6 @@ import { useGet } from '@/hooks/use-services';
 import {
   EMPTY_STATE_VARIANTS,
   SUMMARY_CARD_VARIANTS,
-  TRANSACTION_TYPES,
 } from '@/libs/constants';
 
 interface IGetSummary {

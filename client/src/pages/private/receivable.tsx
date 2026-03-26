@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 
 import type { IDashboardSummary, IGroupedTransaction } from '@/types/services';
 
-import Badge from '@/components/shared/badge';
 import Empty from '@/components/shared/empty';
 import FloatButton from '@/components/shared/float-button';
 import List from '@/components/shared/list';
@@ -17,8 +16,6 @@ import {
   SUMMARY_CARD_VARIANTS,
   TRANSACTION_TYPES,
 } from '@/libs/constants';
-
-import { formatCurrency } from '@/utils/commons';
 
 interface IGetSummary {
   data: IDashboardSummary;

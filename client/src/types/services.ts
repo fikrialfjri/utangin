@@ -41,13 +41,20 @@ export interface ITransaction {
   contact: IContact;
 }
 
-export interface IContactDetail extends IContact {
+export interface ITransactionProgress {
   total_amount: number;
   total_paid: number;
   remaining: number;
   percentage: number;
-  payment_count: number;
   transaction_count: number;
+  payment_count: number;
+  is_paid: boolean;
+  has_data: boolean;
+}
+
+export interface IContactDetail extends IContact {
+  debt_progress: ITransactionProgress;
+  receivable_progress: ITransactionProgress;
   transactions: ITransaction[];
 }
 

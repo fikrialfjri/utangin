@@ -43,7 +43,6 @@ const TransactionDetailPage = () => {
 
   const isDebt = transaction?.type === TRANSACTION_TYPES.DEBT;
   const typeLabel = isDebt ? 'Hutang' : 'Piutang';
-  const remainLabel = isDebt ? 'Sisa Hutang' : 'Sisa Piutang';
 
   usePageTitle('Detail Transaksi');
   usePageHeaderAction(() => setActionDrawerOpen(true));
@@ -130,19 +129,23 @@ const TransactionDetailPage = () => {
         </section>
 
         <PaymentProgressCard
-          label={remainLabel}
-          remaining={transaction?.remaining ?? 0}
-          totalPaid={transaction?.total_paid ?? 0}
-          amount={transaction?.amount ?? 0}
-          percentage={transaction?.percentage ?? 0}
-          paymentCount={transaction?.payments?.length ?? 0}
+          data={{
+            total_amount: transaction?.amount ?? 0,
+            total_paid: transaction?.total_paid ?? 0,
+            remaining: transaction?.remaining ?? 0,
+            percentage: transaction?.percentage ?? 0,
+            payment_count: transaction?.payments?.length ?? 0,
+            transaction_count: 1,
+            is_paid: transaction?.status === 'PAID',
+            has_data: true,
+          }}
           isDebt={isDebt}
-          isPaid={transaction?.status === 'PAID'}
-          onEdit={
+          onPaymentClick={
             transaction?.status === 'ACTIVE'
               ? () => navigateToPaymentForm()
               : undefined
           }
+          paymentCountLabelOnly
         />
       </section>
 
@@ -188,7 +191,6 @@ const TransactionDetailPage = () => {
         )}
       </section>
 
-      {/* Action Drawer */}
       <BottomDrawer
         isOpen={actionDrawerOpen}
         onClose={() => setActionDrawerOpen(false)}

@@ -14,26 +14,35 @@ export class DashboardService {
   }): Promise<DashboardSummaryResponse> {
     const { username, balance } = user;
 
-    const [debtAgg, receivableAgg, debtTrx, receivableTrx] = await Promise.all([
-      this.prismaService.transaction.aggregate({
-        _sum: { amount: true },
-        where: { username, type: TransactionType.DEBT },
-      }),
-      this.prismaService.transaction.aggregate({
-        _sum: { amount: true },
-        where: { username, type: TransactionType.RECEIVABLE },
+    const [debtTxns, receivableTxns] = await Promise.all([
+      this.prismaService.transaction.findMany({
+        where: { username, type: TransactionType.DEBT, status: 'ACTIVE' },
+        orderBy: { date: 'desc' },
+        select: {
+          amount: true,
+          payments: { select: { amount: true } },
+          contact: { select: { id: true, name: true, avatar: true } },
+        },
       }),
       this.prismaService.transaction.findMany({
-        where: { username, type: TransactionType.DEBT },
+        where: { username, type: TransactionType.RECEIVABLE, status: 'ACTIVE' },
         orderBy: { date: 'desc' },
-        select: { contact: { select: { id: true, name: true, avatar: true } } },
-      }),
-      this.prismaService.transaction.findMany({
-        where: { username, type: TransactionType.RECEIVABLE },
-        orderBy: { date: 'desc' },
-        select: { contact: { select: { id: true, name: true, avatar: true } } },
+        select: {
+          amount: true,
+          payments: { select: { amount: true } },
+          contact: { select: { id: true, name: true, avatar: true } },
+        },
       }),
     ]);
+
+    const sumRemaining = (txns: typeof debtTxns) =>
+      txns.reduce((sum, tx) => {
+        const paid = tx.payments.reduce((s, p) => s + p.amount, 0);
+        return sum + (tx.amount - paid);
+      }, 0);
+
+    const totalDebt = sumRemaining(debtTxns);
+    const totalReceivable = sumRemaining(receivableTxns);
 
     const extractRecentUniqueContacts = (
       transactions: {
@@ -56,9 +65,6 @@ export class DashboardService {
       return contacts;
     };
 
-    const totalDebt = debtAgg._sum.amount ?? 0;
-    const totalReceivable = receivableAgg._sum.amount ?? 0;
-
     const receivable_debt = totalReceivable - totalDebt;
     const currentSaldo = balance ?? 0;
     const potentialSaldo = receivable_debt - currentSaldo;
@@ -69,11 +75,11 @@ export class DashboardService {
       receivable_debt: { nominal: receivable_debt },
       debt: {
         nominal: totalDebt,
-        recent_contacts: extractRecentUniqueContacts(debtTrx),
+        recent_contacts: extractRecentUniqueContacts(debtTxns),
       },
       receivable: {
         nominal: totalReceivable,
-        recent_contacts: extractRecentUniqueContacts(receivableTrx),
+        recent_contacts: extractRecentUniqueContacts(receivableTxns),
       },
     };
   }

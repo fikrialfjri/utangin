@@ -17,7 +17,6 @@ import {
   TRANSACTION_TYPES,
 } from '@/libs/constants';
 
-import { formatCurrency } from '@/utils/commons';
 
 interface IGetSummary {
   data: IDashboardSummary;
