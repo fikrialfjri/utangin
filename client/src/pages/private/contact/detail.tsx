@@ -12,9 +12,11 @@ import FloatButton from '@/components/shared/float-button';
 import List from '@/components/shared/list';
 import { PaymentProgress } from '@/components/shared/payment-progress-card';
 import SummaryCard from '@/components/shared/summary-card';
+import Switch from '@/components/shared/switch';
 
 import { usePageHeaderAction, usePageTitle } from '@/hooks/use-page-header';
 import { useDelete, useGet } from '@/hooks/use-services';
+import { useGlobalFilter } from '@/hooks/use-global-filter';
 
 import {
   EMPTY_STATE_VARIANTS,
@@ -30,11 +32,15 @@ import TrashIcon from '@/assets/icons/trash.svg?react';
 const ContactDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { hidePaid } = useGlobalFilter();
 
+  const [localHidePaid, setLocalHidePaid] = useState(hidePaid);
   const [actionDrawerOpen, setActionDrawerOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
-  const { data: contact } = useGet(`/contact/${id}`) as {
+  const { data: contact } = useGet(`/contact/${id}`, {
+    status: localHidePaid ? 'ACTIVE' : undefined,
+  }) as {
     data: IContactDetail;
   };
   const { handleDelete, loadingDelete } = useDelete(`/contact/${id}`, {
@@ -111,9 +117,18 @@ const ContactDetailPage = () => {
       )}
 
       <section className="flex flex-col gap-3">
-        <h2 className="typo-headline-md font-bold! text-neutral-2">
-          List Hutang / Piutang
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="typo-headline-md font-bold! text-neutral-2">
+            List Hutang / Piutang
+          </h2>
+          {hasTransactions && (
+            <Switch
+              label="Sembunyikan Transaksi Lunas"
+              checked={localHidePaid}
+              onCheckedChange={setLocalHidePaid}
+            />
+          )}
+        </div>
         {!hasTransactions ? (
           <Empty
             variant={EMPTY_STATE_VARIANTS.DEBT_RECEIVABLE}

@@ -47,10 +47,8 @@ export class TransactionService {
   ) {}
 
   toTransactionResponse(transaction: Transaction): TransactionResponse {
-    const total_paid = transaction.payments?.reduce(
-      (sum, p) => sum + p.amount,
-      0,
-    ) ?? 0;
+    const total_paid =
+      transaction.payments?.reduce((sum, p) => sum + p.amount, 0) ?? 0;
     const remaining = Math.max(transaction.amount - total_paid, 0);
     const percentage =
       transaction.amount > 0
@@ -144,18 +142,20 @@ export class TransactionService {
     data: TransactionResponse[] | GroupedTransactionResponse[];
     total: number;
   }> {
-    const { page, limit: take, group_by, type } = reqParams;
+    const { page, limit: take, group_by, type, status } = reqParams;
 
     const skip: number = (page! - 1) * take!;
 
     const [transactions, count] = await Promise.all([
       this.prismaService.transaction.findMany({
-        where: { username, type },
+        where: { username, type, status },
         include: transactionInclude,
         orderBy: { date: 'desc' },
         ...(take ? { skip, take } : {}),
       }),
-      this.prismaService.transaction.count({ where: { username } }),
+      this.prismaService.transaction.count({
+        where: { username, type, status },
+      }),
     ]);
 
     let result: TransactionResponse[] | GroupedTransactionResponse[] =
@@ -179,7 +179,9 @@ export class TransactionService {
   toTransactionDetailResponse(
     transaction: TransactionDetail,
   ): TransactionDetailResponse {
-    const base = this.toTransactionResponse(transaction as unknown as Transaction);
+    const base = this.toTransactionResponse(
+      transaction as unknown as Transaction,
+    );
 
     return {
       ...base,

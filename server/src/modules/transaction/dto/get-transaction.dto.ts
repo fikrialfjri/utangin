@@ -1,4 +1,4 @@
-import { TransactionType } from '@prisma/client';
+import { TransactionType, TransactionStatus } from '@prisma/client';
 import z, { ZodObject } from 'zod';
 
 const getTransactionSchema = z.object({
@@ -25,6 +25,7 @@ const getTransactionSchema = z.object({
     .optional(),
   group_by: z.enum(['month']).optional(),
   type: z.enum([TransactionType.DEBT, TransactionType.RECEIVABLE]).optional(),
+  status: z.enum([TransactionStatus.ACTIVE, TransactionStatus.PAID]).optional(),
 });
 
 export class GetTransactionDto {
@@ -36,5 +37,6 @@ export class GetTransactionDto {
     public readonly limit?: number,
     public readonly group_by?: 'month',
     public readonly type?: TransactionType,
+    public readonly status?: TransactionStatus,
   ) {}
 }

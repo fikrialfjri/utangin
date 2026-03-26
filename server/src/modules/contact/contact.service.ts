@@ -26,10 +26,15 @@ export class ContactService {
   toContactResponse(contact: Contact): GlobalContactResponse;
   toContactResponse(contact: Contact, variant: 'basic'): GlobalContactResponse;
   toContactResponse(contact: Contact, variant: 'complete'): ContactResponse;
-  toContactResponse(contact: Contact, variant: 'detail'): ContactDetailResponse;
+  toContactResponse(
+    contact: Contact,
+    variant: 'detail',
+    statusFilter?: string,
+  ): ContactDetailResponse;
   toContactResponse(
     contact: Contact,
     variant: 'basic' | 'complete' | 'detail' = 'basic',
+    statusFilter?: string,
   ): GlobalContactResponse | ContactResponse | ContactDetailResponse {
     const basicResponse = {
       id: contact.id,
@@ -93,8 +98,7 @@ export class ContactService {
 
       const total_amount = activeTxns.reduce((sum, tx) => sum + tx.amount, 0);
       const total_paid = activeTxns.reduce(
-        (sum, tx) =>
-          sum + tx.payments.reduce((pSum, p) => pSum + p.amount, 0),
+        (sum, tx) => sum + tx.payments.reduce((pSum, p) => pSum + p.amount, 0),
         0,
       );
       const payment_count = activeTxns.reduce(
@@ -119,23 +123,24 @@ export class ContactService {
       ...completeResponse,
       debt_progress: computeProgress(TransactionType.DEBT),
       receivable_progress: computeProgress(TransactionType.RECEIVABLE),
-      transactions: contact.transactions.map((tx) => {
-        const _total_paid = tx.payments.reduce((sum, p) => sum + p.amount, 0);
-        return {
-          id: tx.id,
-          type: tx.type,
-          amount: tx.amount,
-          status: tx.status,
-          date: tx.date,
-          last_payment: tx.payments[0]?.date,
-          ...(tx.note && { note: tx.note }),
-          ...(tx.due_date && { due_date: tx.due_date }),
-          total_paid: _total_paid,
-          remaining: Math.max(tx.amount - _total_paid, 0),
-          percentage:
-            tx.amount > 0 ? (_total_paid / tx.amount) * 100 : 0,
-        };
-      }),
+      transactions: contact.transactions
+        .filter((tx) => (statusFilter ? tx.status === statusFilter : true))
+        .map((tx) => {
+          const _total_paid = tx.payments.reduce((sum, p) => sum + p.amount, 0);
+          return {
+            id: tx.id,
+            type: tx.type,
+            amount: tx.amount,
+            status: tx.status,
+            date: tx.date,
+            last_payment: tx.payments[0]?.date,
+            ...(tx.note && { note: tx.note }),
+            ...(tx.due_date && { due_date: tx.due_date }),
+            total_paid: _total_paid,
+            remaining: Math.max(tx.amount - _total_paid, 0),
+            percentage: tx.amount > 0 ? (_total_paid / tx.amount) * 100 : 0,
+          };
+        }),
     };
   }
 
@@ -180,10 +185,14 @@ export class ContactService {
     );
   }
 
-  async findOne(username: string, id: number): Promise<ContactDetailResponse> {
+  async findOne(
+    username: string,
+    id: number,
+    status?: string,
+  ): Promise<ContactDetailResponse> {
     const contact = await this.checkContactMustExists(username, id);
 
-    return this.toContactResponse(contact, 'detail');
+    return this.toContactResponse(contact, 'detail', status);
   }
 
   async update(

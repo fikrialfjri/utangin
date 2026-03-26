@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import dayjs from 'dayjs';
@@ -8,8 +9,10 @@ import Empty from '@/components/shared/empty';
 import FloatButton from '@/components/shared/float-button';
 import List from '@/components/shared/list';
 import SummaryCard from '@/components/shared/summary-card';
+import Switch from '@/components/shared/switch';
 
 import { useGet } from '@/hooks/use-services';
+import { useGlobalFilter } from '@/hooks/use-global-filter';
 
 import {
   EMPTY_STATE_VARIANTS,
@@ -26,10 +29,13 @@ interface IGetTransaction {
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const { hidePaid } = useGlobalFilter();
+  const [localHidePaid, setLocalHidePaid] = useState(hidePaid);
 
   const { data: summaryData }: IGetSummary = useGet('/dashboard/summary');
   const { data: transactionData }: IGetTransaction = useGet('/transaction', {
     group_by: 'month',
+    status: localHidePaid ? 'ACTIVE' : undefined,
   });
 
   return (
@@ -60,9 +66,16 @@ const HomePage = () => {
         />
       </section>
       <section className="flex flex-col gap-3">
-        <h2 className="typo-headline-md font-bold! text-neutral-2">
-          Transaksi
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="typo-headline-md font-bold! text-neutral-2">
+            Transaksi
+          </h2>
+          <Switch
+            label="Sembunyikan Transaksi Lunas"
+            checked={localHidePaid}
+            onCheckedChange={setLocalHidePaid}
+          />
+        </div>
         {!transactionData?.length ? (
           <Empty
             variant={EMPTY_STATE_VARIANTS.TRANSACTION}

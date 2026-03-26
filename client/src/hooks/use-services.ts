@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { type IMetaResponse } from '@/types/commons';
 
 import instance from '@/utils/axios-instance';
-import { getObjectSearch } from '@/utils/commons';
+import { getObjectSearch, removeEmptyFields } from '@/utils/commons';
 
 interface IActionOptions {
   onSuccess?: (data?: any) => void;
@@ -41,13 +41,17 @@ export const useGet = (url: string, query: any = {}, options?: IGetOptions) => {
     return { ...defaultOptions, ...options };
   }, [options]);
 
+  const stringifiedQuery = JSON.stringify(query);
+
   useEffect(() => {
     if (currOptions.shouldFetch) {
       const payload = { ...objectSearch, ...query };
 
-      const finalParams = currOptions.pagination
-        ? { page: 1, limit: 10, ...payload }
-        : payload;
+      const finalParams = removeEmptyFields(
+        currOptions.pagination
+          ? { page: 1, limit: 10, ...payload }
+          : payload
+      );
 
       _fetchData(finalParams);
 
@@ -57,7 +61,7 @@ export const useGet = (url: string, query: any = {}, options?: IGetOptions) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currOptions.shouldFetch, currOptions.pagination]);
+  }, [currOptions.shouldFetch, currOptions.pagination, stringifiedQuery, url]);
 
   const _fetchData = async (params: any, customUrl?: string) => {
     try {
