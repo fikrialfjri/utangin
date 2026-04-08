@@ -14,9 +14,9 @@ import { PaymentProgress } from '@/components/shared/payment-progress-card';
 import SummaryCard from '@/components/shared/summary-card';
 import Switch from '@/components/shared/switch';
 
+import { useGlobalFilter } from '@/hooks/use-global-filter';
 import { usePageHeaderAction, usePageTitle } from '@/hooks/use-page-header';
 import { useDelete, useGet } from '@/hooks/use-services';
-import { useGlobalFilter } from '@/hooks/use-global-filter';
 
 import {
   EMPTY_STATE_VARIANTS,
@@ -94,7 +94,7 @@ const ContactDetailPage = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-3">
       <SummaryCard
         variant={SUMMARY_CARD_VARIANTS.CONTACT_DETAIL}
         data={{ nominal: contact?.net_total ?? 0 }}

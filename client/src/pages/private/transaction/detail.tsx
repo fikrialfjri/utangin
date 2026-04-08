@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import type { IPayment, ITransactionDetail } from '@/types/services';
 
 import Avatar from '@/components/shared/avatar';
+import Badge from '@/components/shared/badge';
 import BottomDrawer from '@/components/shared/bottom-drawer';
 import ConfirmDialog from '@/components/shared/confirm-dialog';
 import Empty from '@/components/shared/empty';
@@ -19,10 +20,8 @@ import { TRANSACTION_TYPES } from '@/libs/constants';
 
 import { formatCurrency, joinClassnames } from '@/utils/commons';
 
-import DebtIcon from '@/assets/icons/debt.svg?react';
 import EditIcon from '@/assets/icons/edit.svg?react';
 import PaymentIcon from '@/assets/icons/payment.svg?react';
-import ReceivableIcon from '@/assets/icons/receivable.svg?react';
 import TrashIcon from '@/assets/icons/trash.svg?react';
 
 const TransactionDetailPage = () => {
@@ -90,42 +89,40 @@ const TransactionDetailPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <section className="flex flex-col gap-3">
-        <section className="flex flex-col gap-4 rounded-[18px] bg-primary p-4 shadow-primary-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <Avatar
-                src={transaction?.contact?.avatar}
-                name={transaction?.contact?.name ?? ''}
-                size="default"
-              />
-              <div className="flex-1">
-                <h4 className="typo-body-md font-bold! text-shades-white">
-                  {transaction?.contact?.name}
-                </h4>
-                <p className="typo-caption-sm text-shades-white/75">
-                  Tanggal Transaksi:{' '}
-                  <span className="font-semibold!">
-                    {transaction?.date
-                      ? dayjs(transaction.date).format('DD MMM YYYY')
-                      : '-'}
-                  </span>
-                </p>
+        <section className="relative overflow-hidden flex flex-col rounded-[22px] bg-linear-to-br from-primary to-primary-300/90 border border-primary/50 p-5 shadow-md shadow-primary/10">
+          <div className="absolute -top-12 -right-10 w-40 h-40 rounded-full blur-2xl pointer-events-none bg-white/20"></div>
+          <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full blur-xl pointer-events-none bg-black/10"></div>
+
+          <div className="relative z-10 flex flex-col gap-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Avatar
+                  src={transaction?.contact?.avatar}
+                  name={transaction?.contact?.name ?? ''}
+                  size="default"
+                />
+                <div className="flex-1">
+                  <h4 className="typo-body-md font-bold! text-shades-white">
+                    {transaction?.contact?.name}
+                  </h4>
+                  <p className="typo-caption-sm text-shades-white/75">
+                    Tanggal Transaksi:{' '}
+                    <span className="font-semibold!">
+                      {transaction?.date
+                        ? dayjs(transaction.date).format('DD MMM YYYY')
+                        : '-'}
+                    </span>
+                  </p>
+                </div>
               </div>
+              <Badge variant={isDebt ? 'debt' : 'receivable'} size="sm" />
             </div>
-            <div className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-shades-white/15">
-              <div className="*:w-4 *:h-4 text-white">
-                {isDebt ? <DebtIcon /> : <ReceivableIcon />}
-              </div>
-              <span className="typo-caption-sm font-semibold! text-shades-white">
-                {typeLabel}
-              </span>
-            </div>
+            {transaction?.note && (
+              <p className="typo-caption-md text-shades-white/90">
+                {transaction.note}
+              </p>
+            )}
           </div>
-          {transaction?.note && (
-            <p className="typo-caption-md text-shades-white/90">
-              {transaction.note}
-            </p>
-          )}
         </section>
 
         <PaymentProgressCard

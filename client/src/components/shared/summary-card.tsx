@@ -55,12 +55,35 @@ const SummaryCard = ({
   statusBadge,
 }: IProps) => {
   const wrapperClassnames: StringMap = {
-    POTENTIAL: 'bg-primary text-shades-white',
-    CURRENT: 'bg-primary-50 text-neutral-2',
-    RECEIVABLE_DEBT: 'bg-primary-50 text-neutral-2',
-    CONTACT_DETAIL: 'bg-primary-50 text-neutral-2',
-    DEBT: 'bg-danger text-shades-white',
-    RECEIVABLE: 'bg-warning text-shades-white',
+    POTENTIAL:
+      'bg-linear-to-br from-primary to-primary-300 text-shades-white border-primary/50',
+    CURRENT:
+      'bg-linear-to-br from-primary-50 to-shades-white text-neutral-2 border-primary/50',
+    RECEIVABLE_DEBT:
+      'bg-linear-to-br from-primary-50 to-shades-white text-neutral-2 border-primary/50',
+    CONTACT_DETAIL:
+      'bg-linear-to-br from-primary-50 to-shades-white text-neutral-2 border-primary/50',
+    DEBT: 'bg-linear-to-br from-danger to-danger-100 text-shades-white border-danger/50',
+    RECEIVABLE:
+      'bg-linear-to-br from-warning to-warning-100 text-shades-white border-warning/50',
+  };
+
+  const wrapperBgAccents1: StringMap = {
+    POTENTIAL: 'bg-white/20',
+    CURRENT: 'bg-primary/10',
+    RECEIVABLE_DEBT: 'bg-primary/10',
+    CONTACT_DETAIL: 'bg-primary/10',
+    DEBT: 'bg-danger/75',
+    RECEIVABLE: 'bg-warning/75',
+  };
+
+  const wrapperBgAccents2: StringMap = {
+    POTENTIAL: 'bg-primary/10',
+    CURRENT: 'bg-primary/5',
+    RECEIVABLE_DEBT: 'bg-primary/5',
+    CONTACT_DETAIL: 'bg-primary/5',
+    DEBT: 'bg-danger/75',
+    RECEIVABLE: 'bg-warning/75',
   };
 
   const renderedIcons: ReactNodeMap = {
@@ -96,82 +119,101 @@ const SummaryCard = ({
   return (
     <div
       className={joinClassnames([
-        'p-3 rounded-[18px] flex flex-col gap-2.5 hover:scale-105 transition hover:shadow-primary-4',
+        'relative overflow-hidden p-3 rounded-[22px] transition-all hover:scale-[1.01] hover:shadow-lg border',
         wrapperClassnames[variant],
-        withShadow ? 'shadow-primary-3' : '',
+        withShadow ? 'shadow-md shadow-primary/10' : 'shadow-sm',
         className,
       ])}
     >
-      {isContactDetail && contactInfo ? (
-        <div className="flex items-center gap-3">
-          <Avatar
-            src={contactInfo.avatar}
-            name={contactInfo.name}
-            size="default"
-          />
-          <div className="text-neutral-2">
-            <h4 className="typo-body-md font-semibold!">{contactInfo.name}</h4>
-            {contactInfo.description && (
-              <p className="typo-caption-sm text-neutral-3">
-                {contactInfo.description}
-              </p>
-            )}
+      <div
+        className={joinClassnames([
+          'absolute -top-12 -left-6 w-40 h-40 rounded-full blur-2xl pointer-events-none transition-colors',
+          wrapperBgAccents1[variant],
+        ])}
+      ></div>
+      <div
+        className={joinClassnames([
+          'absolute -bottom-10 -right-6 w-28 h-28 rounded-full blur-2xl pointer-events-none transition-colors',
+          wrapperBgAccents2[variant],
+        ])}
+      ></div>
+
+      <div className="relative z-10 flex flex-col gap-2.5">
+        {isContactDetail && contactInfo ? (
+          <div className="flex items-center gap-3">
+            <Avatar
+              src={contactInfo.avatar}
+              name={contactInfo.name}
+              size="default"
+            />
+            <div className="text-neutral-2">
+              <h4 className="typo-body-md font-semibold!">
+                {contactInfo.name}
+              </h4>
+              {contactInfo.description && (
+                <p className="typo-caption-sm text-neutral-3">
+                  {contactInfo.description}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      ) : null}
-      {!hideNominal && (
-        <div
-          className={joinClassnames([
-            'flex flex-col',
-            centered ? 'justify-center items-center' : 'items-start',
-          ])}
-        >
-          <div className="flex items-center gap-1">
-            <div className="*:w-3.5 *:h-3.5">{resolvedIcon}</div>
-            <label className="typo-body-md font-normal!">{resolvedLabel}</label>
-          </div>
-          <h3
+        ) : null}
+        {!hideNominal && (
+          <div
             className={joinClassnames([
-              'typo-headline-md font-bold!',
-              withColorValue
-                ? isMinusNumber(data?.nominal ?? 0) ||
-                  contactInfo?.status === TRANSACTION_TYPES.DEBT
-                  ? 'text-danger'
-                  : isZeroNumber(data?.nominal ?? 0)
-                    ? ''
-                    : 'text-success'
-                : '',
-              titleClassName,
+              'flex flex-col',
+              centered ? 'justify-center items-center' : 'items-start',
             ])}
           >
-            {isMinusNumber(data?.nominal ?? 0) ||
-            contactInfo?.status === TRANSACTION_TYPES.DEBT
-              ? '-'
-              : ''}
-            Rp
-            {Math.abs(data?.nominal ?? 0)?.toLocaleString()}
-          </h3>
-        </div>
-      )}
-      {hideNominal && statusBadge && (
-        <div
-          className={joinClassnames([
-            'flex',
-            centered ? 'justify-center' : 'justify-start',
-          ])}
-        >
-          {statusBadge}
-        </div>
-      )}
-      {!withoutRecentContacts &&
-      (variant === TRANSACTION_TYPES.DEBT ||
-        variant === TRANSACTION_TYPES.RECEIVABLE)
-        ? data?.recent_contacts && (
-            <div>
-              <AvatarGroup data={data.recent_contacts} />
+            <div className="flex items-center gap-1.5 opacity-90">
+              <div className="*:w-4 *:h-4">{resolvedIcon}</div>
+              <label className="typo-body-md font-normal!">
+                {resolvedLabel}
+              </label>
             </div>
-          )
-        : null}
+            <h3
+              className={joinClassnames([
+                'typo-headline-md font-bold! tracking-tight mt-0.5',
+                withColorValue
+                  ? isMinusNumber(data?.nominal ?? 0) ||
+                    contactInfo?.status === TRANSACTION_TYPES.DEBT
+                    ? 'text-danger'
+                    : isZeroNumber(data?.nominal ?? 0)
+                      ? ''
+                      : 'text-success'
+                  : '',
+                titleClassName,
+              ])}
+            >
+              {isMinusNumber(data?.nominal ?? 0) ||
+              contactInfo?.status === TRANSACTION_TYPES.DEBT
+                ? '-'
+                : ''}
+              Rp
+              {Math.abs(data?.nominal ?? 0)?.toLocaleString()}
+            </h3>
+          </div>
+        )}
+        {hideNominal && statusBadge && (
+          <div
+            className={joinClassnames([
+              'flex',
+              centered ? 'justify-center' : 'justify-start',
+            ])}
+          >
+            {statusBadge}
+          </div>
+        )}
+        {!withoutRecentContacts &&
+        (variant === TRANSACTION_TYPES.DEBT ||
+          variant === TRANSACTION_TYPES.RECEIVABLE)
+          ? data?.recent_contacts && (
+              <div>
+                <AvatarGroup data={data.recent_contacts} />
+              </div>
+            )
+          : null}
+      </div>
     </div>
   );
 };

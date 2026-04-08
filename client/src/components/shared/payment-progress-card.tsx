@@ -67,107 +67,117 @@ const PaymentProgressCard = ({
   return (
     <div
       className={joinClassnames([
-        'relative flex flex-col gap-3 rounded-[18px] bg-primary-50 p-4 shadow-primary-3',
+        'relative overflow-hidden flex flex-col gap-3.5 rounded-[22px] p-5 shadow-sm border transition-shadow hover:shadow-md',
+        'bg-linear-to-br from-primary-50 to-shades-white border-primary/50',
         className,
       ])}
     >
-      {onPaymentClick && (
-        <button
-          type="button"
-          onClick={onPaymentClick}
-          className="absolute top-4 right-4 flex items-center justify-center rounded-full p-1 cursor-pointer transition-opacity hover:opacity-70"
-        >
-          <PaymentIcon className="w-6 h-6 text-primary" />
-        </button>
-      )}
+      <div className="absolute -top-12 -right-8 w-40 h-40 rounded-full blur-[28px] pointer-events-none transition-colors bg-primary/10"></div>
+      <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full blur-xl pointer-events-none bg-primary/5"></div>
 
-      {badgePosition === 'absolute' && (
-        <div className="absolute top-4 right-4">{badgeNode}</div>
-      )}
+      <div className="relative z-10 flex flex-col gap-3">
+        {onPaymentClick && (
+          <button
+            type="button"
+            onClick={onPaymentClick}
+            className="absolute top-0 right-0 flex items-center justify-center rounded-full p-1 cursor-pointer transition-opacity hover:opacity-70"
+          >
+            <PaymentIcon className="w-6 h-6 text-primary" />
+          </button>
+        )}
 
-      {badgePosition === 'inline' ? (
-        <div className="flex items-center justify-between">
-          {remainingContent}
-          {badgeNode}
-        </div>
-      ) : (
-        <div
-          className={joinClassnames([
-            compact ? undefined : 'flex flex-col items-center',
-          ])}
-        >
-          {remainingContent}
-        </div>
-      )}
+        {badgePosition === 'absolute' && (
+          <div className="absolute top-0 right-0">{badgeNode}</div>
+        )}
 
-      <div className="flex flex-col gap-1">
-        <div className="flex items-baseline justify-between text-neutral-3">
-          <div className="flex items-end gap-1">
-            <h4
-              className={joinClassnames([
-                compact
-                  ? 'typo-body-md font-bold!'
-                  : 'typo-headline-lg font-bold!',
-                data.total_paid > 0 ? 'text-primary' : 'text-neutral-3',
-              ])}
-            >
-              {formatCurrency(data.total_paid)}
-            </h4>
-            <span
-              className={joinClassnames([
-                compact ? 'typo-caption-sm' : 'typo-caption-md',
-              ])}
-            >
-              /
-            </span>
-            <h5
-              className={joinClassnames([
-                compact ? 'typo-caption-sm' : 'typo-caption-md',
-              ])}
-            >
-              {formatCurrency(data.total_amount)}
-            </h5>
+        {badgePosition === 'inline' ? (
+          <div className="flex items-center justify-between">
+            {remainingContent}
+            {badgeNode}
           </div>
-
-          {paymentCountLabelOnly && (
-            <span
-              className={joinClassnames([
-                compact ? 'typo-caption-sm' : 'typo-caption-md',
-              ])}
-            >
-              {data.payment_count} pembayaran
-            </span>
-          )}
-        </div>
-
-        <div className="h-2 w-full rounded-full bg-neutral-6 overflow-hidden">
+        ) : (
           <div
             className={joinClassnames([
-              'h-full rounded-full transition-all duration-700 ease-out',
-              data.is_paid ? 'bg-success' : 'bg-primary',
+              compact ? undefined : 'flex flex-col items-center',
             ])}
-            style={{ width: `${animatedWidth}%` }}
-          />
-        </div>
-
-        {!paymentCountLabelOnly && (
-          <div className="flex items-center justify-between text-neutral-3">
-            <span
-              className={joinClassnames([
-                compact ? 'typo-caption-sm' : 'typo-caption-md',
-              ])}
-            >
-              {data.transaction_count} transaksi
-            </span>
-            <span
-              className={joinClassnames([
-                compact ? 'typo-caption-sm' : 'typo-caption-md',
-              ])}
-            >
-              {data.payment_count} pembayaran
-            </span>
+          >
+            {remainingContent}
           </div>
         )}
+
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-baseline justify-between text-neutral-3">
+            <div className="flex items-end gap-1">
+              <h4
+                className={joinClassnames([
+                  compact
+                    ? 'typo-body-md font-bold!'
+                    : 'typo-headline-lg font-bold!',
+                  data.total_paid > 0 ? 'text-primary' : 'text-neutral-3',
+                ])}
+              >
+                {formatCurrency(data.total_paid)}
+              </h4>
+              <span
+                className={joinClassnames([
+                  compact ? 'typo-caption-sm' : 'typo-caption-md',
+                ])}
+              >
+                /
+              </span>
+              <h5
+                className={joinClassnames([
+                  compact
+                    ? 'typo-caption-sm'
+                    : 'typo-caption-md tracking-tight',
+                ])}
+              >
+                {formatCurrency(data.total_amount)}
+              </h5>
+            </div>
+
+            {paymentCountLabelOnly && (
+              <span
+                className={joinClassnames([
+                  compact ? 'typo-caption-sm' : 'typo-caption-md',
+                ])}
+              >
+                {data.payment_count} pembayaran
+              </span>
+            )}
+          </div>
+
+          <div className="h-2 w-full rounded-full bg-white border border-neutral-6/50 overflow-hidden shadow-inner">
+            <div
+              className={joinClassnames([
+                'h-full rounded-full transition-all duration-700 ease-out',
+                data.is_paid
+                  ? 'bg-success'
+                  : 'bg-linear-to-r from-primary-300 to-primary shadow-sm',
+              ])}
+              style={{ width: `${animatedWidth}%` }}
+            />
+          </div>
+
+          {!paymentCountLabelOnly && (
+            <div className="flex items-center justify-between text-neutral-3">
+              <span
+                className={joinClassnames([
+                  compact ? 'typo-caption-sm' : 'typo-caption-md',
+                ])}
+              >
+                {data.transaction_count} transaksi
+              </span>
+              <span
+                className={joinClassnames([
+                  compact ? 'typo-caption-sm' : 'typo-caption-md',
+                ])}
+              >
+                {data.payment_count} pembayaran
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
